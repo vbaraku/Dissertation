@@ -4,7 +4,6 @@ const deploy = require("../lib/deploy");
 
 describe("Purchase", function () {
   let accounts;
-
   before(async () => {
     accounts = await ethers.getSigners();
   });

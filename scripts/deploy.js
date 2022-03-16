@@ -8,13 +8,19 @@ const deploy = require("../lib/deploy");
 const { ethers } = require("hardhat");
 
 async function main() {
-  let accounts;
-  accounts = await ethers.getSigners();
-  const purchase = await deploy(
-    ethers.utils.parseEther("10"),
-    accounts[0].address
-  );
-  console.log("Purchase deployed to:", purchase.address);
+  const Factory = await hre.ethers.getContractFactory("ContractFactory");
+  const factory = await Factory.deploy();
+
+  await factory.deployed();
+  console.log("Factory deployed to:", factory.address);
+
+  // let accounts;
+  // accounts = await ethers.getSigners();
+  
+  // const purchase = await deploy(
+  //   ethers.utils.parseEther("10"),
+  //   accounts[0].address
+  // ); 
 }
 
 main()
