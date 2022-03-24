@@ -9,19 +9,9 @@ import Slide from "@mui/material/Slide";
 import ContractFactory from "../artifacts/contracts/ContractFactory.sol/ContractFactory.json";
 import { useState, useEffect } from "react";
 import { ethers } from "ethers";
-
-import Box from "@mui/material/Box";
-import IconButton from "@mui/material/IconButton";
-import Input from "@mui/material/Input";
-import FilledInput from "@mui/material/FilledInput";
 import OutlinedInput from "@mui/material/OutlinedInput";
-import InputLabel from "@mui/material/InputLabel";
 import InputAdornment from "@mui/material/InputAdornment";
-import FormHelperText from "@mui/material/FormHelperText";
 import FormControl from "@mui/material/FormControl";
-import TextField from "@mui/material/TextField";
-import Visibility from "@mui/icons-material/Visibility";
-import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -31,15 +21,8 @@ export default function AddProduct() {
   const factoryAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
   const [open, setOpen] = React.useState(false);
 
-  const [values, setValues] = React.useState({
-    amount: "",
-  });
+  const [priceOfNew, setPriceOfNew] = React.useState();
   
-
-  const handleChange = (prop) => (event) => {
-    setValues({ ...values, [prop]: event.target.value });
-    console.log(values);
-  };
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -54,7 +37,7 @@ export default function AddProduct() {
   }
 
   const handleSubmit = async () => {
-    if (!values.amount) return;
+    if (!priceOfNew) return;
     if (typeof window.ethereum !== "undefined") {
       await requestAccount();
       const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -66,7 +49,7 @@ export default function AddProduct() {
       );
       try {
         const transaction = await contract.createPurchase(
-          ethers.utils.parseEther(values.amount)
+          ethers.utils.parseEther(priceOfNew)
         );
         await transaction.wait();
       } catch (error) {
@@ -74,6 +57,8 @@ export default function AddProduct() {
         console.log(error);
       }
     }
+    setOpen(false);
+    window.location.reload(); // NEEDS TO BE CHANGED LATER TO UPDATE WITHOUT RELOADING
   };
 
   return (
@@ -95,8 +80,7 @@ export default function AddProduct() {
             <FormControl sx={{ m: 1, width: "18ch" }} variant="outlined">
               <OutlinedInput
                 id="outlined-adornment-amount"
-                value={values.amount}
-                onChange={handleChange("amount")}
+                onChange={(e) => setPriceOfNew(e.target.value)}
                 endAdornment={
                   <InputAdornment position="end">ETH</InputAdornment>
                 }
