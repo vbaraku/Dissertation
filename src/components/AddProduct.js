@@ -12,6 +12,7 @@ import { ethers } from "ethers";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import InputAdornment from "@mui/material/InputAdornment";
 import FormControl from "@mui/material/FormControl";
+import * as IPFS from "ipfs-core";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -22,7 +23,6 @@ export default function AddProduct() {
   const [open, setOpen] = React.useState(false);
 
   const [priceOfNew, setPriceOfNew] = React.useState();
-  
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -61,6 +61,43 @@ export default function AddProduct() {
     window.location.reload(); // NEEDS TO BE CHANGED LATER TO UPDATE WITHOUT RELOADING
   };
 
+  const [images, setImages] = React.useState({
+    files: []
+  });
+
+  const[ipfsCIDs, setIpfsCIDs] = React.useState([]);
+
+  // useEffect(() => {
+  //   IPFS.create().then((ipfs) => {
+  //     ipfs.add("Hello world").then(({ cid }) => {
+  //       console.log(cid);
+  //     });
+  //   });
+  // }, []);
+
+  const retrieveFile = (e) => {
+    console.log("retrieve file called")
+    console.log(e.target.files)
+    setImages({ files: [...images.files, ...e.target.files] })
+  }
+
+  const handleSubmit2= (e) => {
+    e.preventDefault();
+    console.log(images);
+    let tempArray = [];
+    IPFS.create().then((ipfs) => {
+      images.files.forEach(e => {
+        console.log(e);
+        ipfs.add(e).then(({ cid }) => {
+          tempArray.push(cid.toString);
+          console.log(cid.toString());
+        });
+      });
+      setIpfsCIDs(tempArray);
+    });
+    console.log(ipfsCIDs); 
+  }
+
   return (
     <div>
       <Button variant="outlined" onClick={handleClickOpen}>
@@ -90,6 +127,12 @@ export default function AddProduct() {
               />
             </FormControl>
           </DialogContentText>
+          <form className="form" onSubmit={handleSubmit2}>
+          <input type="file" multiple name="data" onChange={retrieveFile} />
+          <button type="submit" className="btn">
+            Upload file
+          </button>
+        </form>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
