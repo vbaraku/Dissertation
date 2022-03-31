@@ -11,13 +11,14 @@ describe("Factory", function () {
   it("Should deploy contract correctly", async function () {
     const Factory = await ethers.getContractFactory("ContractFactory");
     const contractFactory = await Factory.deploy();
+    const testCIDs = ["abc", "def"];
 
     await contractFactory
       .connect(accounts[0])
-      .createPurchase(ethers.utils.parseEther("10"));
+      .createPurchase(ethers.utils.parseEther("10"), testCIDs);
     await contractFactory
       .connect(accounts[1])
-      .createPurchase(ethers.utils.parseEther("11"));
+      .createPurchase(ethers.utils.parseEther("11"), testCIDs);
 
     const returnedAddresses = await contractFactory.getContracts();
 

@@ -3,10 +3,12 @@ pragma solidity 0.8.12;
 contract Purchase {
     address payable public beneficiary;
     uint256 public requestedAmount;
+    string[] public ipfsCIDs;
 
-    constructor(uint256 wantedAmount, address payable creator) {
+    constructor(uint256 wantedAmount, address payable creator, string[] memory cids) {
         beneficiary = creator;
         requestedAmount = wantedAmount;
+        ipfsCIDs = cids;
     }
 
     modifier SellerCantBuy() {
@@ -35,6 +37,10 @@ contract Purchase {
 
     function getOwner() public view returns (address owner) {
         return beneficiary;
+    }
+
+    function getCIDs() public view returns (string[] memory) {
+        return ipfsCIDs;
     }
 
     function buy() public payable SellerCantBuy {

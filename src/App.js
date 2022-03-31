@@ -44,8 +44,9 @@ function App() {
             const promises = tempArray.map(async (e) => {
               let price1 = ethers.utils.formatEther(await e.getPrice());
               let owner1 = await e.getOwner();
+              let cids1 = await e.getCIDs();
               let address1 = e.address;
-              let data = { price: price1, owner: owner1, address: address1 };
+              let data = { price: price1, owner: owner1, cids: cids1, address: address1 };
               console.log(data);
               return data;
             });
@@ -101,7 +102,7 @@ function App() {
     }
   }
 
-  if (!contractsData.length) {
+  if (false) {
     return "Loading";
   } else {
     return (

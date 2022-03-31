@@ -36,6 +36,39 @@ export default function AddProduct() {
     await window.ethereum.request({ method: "eth_requestAccounts" });
   }
 
+  const [images, setImages] = React.useState({
+    files: [],
+  });
+
+  const [ipfsCIDs, setIpfsCIDs] = React.useState([]);
+  const [disabledButton, setDisabledButton] = React.useState(true);
+
+  const retrieveFile = (e) => {
+    console.log("retrieve file called");
+    console.log(e.target.files);
+    setImages({ files: [...images.files, ...e.target.files] });
+  };
+
+  
+  const handleSubmit2 = (e) => {
+    e.preventDefault();
+    console.log(images);
+    let tempArray = [];
+    IPFS.create().then((ipfs) => {
+      images.files.forEach((e) => {
+        console.log(e);
+        ipfs.add(e).then(({ cid }) => {
+          tempArray.push(cid.toString());
+          setDisabledButton(false);
+          console.log(cid.toString());
+        });
+      });
+      setIpfsCIDs(tempArray);
+    });
+  };
+
+  console.log(ipfsCIDs);
+
   const handleSubmit = async () => {
     if (!priceOfNew) return;
     if (typeof window.ethereum !== "undefined") {
@@ -49,7 +82,8 @@ export default function AddProduct() {
       );
       try {
         const transaction = await contract.createPurchase(
-          ethers.utils.parseEther(priceOfNew)
+          ethers.utils.parseEther(priceOfNew),
+          ipfsCIDs
         );
         await transaction.wait();
       } catch (error) {
@@ -60,43 +94,6 @@ export default function AddProduct() {
     setOpen(false);
     window.location.reload(); // NEEDS TO BE CHANGED LATER TO UPDATE WITHOUT RELOADING
   };
-
-  const [images, setImages] = React.useState({
-    files: []
-  });
-
-  const[ipfsCIDs, setIpfsCIDs] = React.useState([]);
-
-  // useEffect(() => {
-  //   IPFS.create().then((ipfs) => {
-  //     ipfs.add("Hello world").then(({ cid }) => {
-  //       console.log(cid);
-  //     });
-  //   });
-  // }, []);
-
-  const retrieveFile = (e) => {
-    console.log("retrieve file called")
-    console.log(e.target.files)
-    setImages({ files: [...images.files, ...e.target.files] })
-  }
-
-  const handleSubmit2= (e) => {
-    e.preventDefault();
-    console.log(images);
-    let tempArray = [];
-    IPFS.create().then((ipfs) => {
-      images.files.forEach(e => {
-        console.log(e);
-        ipfs.add(e).then(({ cid }) => {
-          tempArray.push(cid.toString);
-          console.log(cid.toString());
-        });
-      });
-      setIpfsCIDs(tempArray);
-    });
-    console.log(ipfsCIDs); 
-  }
 
   return (
     <div>
@@ -114,8 +111,10 @@ export default function AddProduct() {
         <DialogContent>
           <DialogContentText id="alert-dialog-slide-description">
             Please provide the wanted amount in Ether:
-            <FormControl sx={{ m: 1, width: "18ch" }} variant="outlined">
+            <FormControl sx={{ m: 1, width: "18ch" }} variant="outlined" >
               <OutlinedInput
+                required
+                style={{height: "1cm"}}
                 id="outlined-adornment-amount"
                 onChange={(e) => setPriceOfNew(e.target.value)}
                 endAdornment={
@@ -127,16 +126,19 @@ export default function AddProduct() {
               />
             </FormControl>
           </DialogContentText>
-          <form className="form" onSubmit={handleSubmit2}>
-          <input type="file" multiple name="data" onChange={retrieveFile} />
-          <button type="submit" className="btn">
-            Upload file
-          </button>
-        </form>
+          <DialogContentText>
+            Please upload your data:
+            <form className="form" onSubmit={handleSubmit2}>
+              <input type="file" multiple name="data" onChange={retrieveFile} />
+              <button type="submit" className="btn">
+                Upload file
+              </button>
+            </form>
+          </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleSubmit}>Create</Button>
+          <Button onClick={handleSubmit} disabled={disabledButton}>Create</Button>
         </DialogActions>
       </Dialog>
     </div>

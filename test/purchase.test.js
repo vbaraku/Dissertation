@@ -4,6 +4,7 @@ const deploy = require("../lib/deploy");
 
 describe("Purchase", function () {
   let accounts;
+  let testCIDs = ["abc", "def"];
   before(async () => {
     accounts = await ethers.getSigners();
   });
@@ -11,7 +12,8 @@ describe("Purchase", function () {
   it("Should not be able to buy own product", async function () {
     const purchase = await deploy(
       ethers.utils.parseEther("10"),
-      accounts[0].address
+      accounts[0].address,
+      testCIDs
     );
 
     await expect(purchase.buy()).to.be.revertedWith(
@@ -22,37 +24,44 @@ describe("Purchase", function () {
   it("Should not be able to buy without right funds", async function () {
     const purchase = await deploy(
       ethers.utils.parseEther("10"),
-      accounts[0].address
+      accounts[0].address,
+      testCIDs
     );
     const buyer = purchase.connect(accounts[1]);
 
     await expect(buyer.buy()).to.be.revertedWith("invalid amount");
   });
 
-  it("Should not be able to change price if not owner", async function(){
+  it("Should not be able to change price if not owner", async function () {
     const purchase = await deploy(
       ethers.utils.parseEther("10"),
-      accounts[0].address
-    )
+      accounts[0].address,
+      testCIDs
+    );
     const buyer = purchase.connect(accounts[1]);
 
-    await expect(buyer.setPrice(5)).to.be.revertedWith("Only the owner can change the price")
+    await expect(buyer.setPrice(5)).to.be.revertedWith(
+      "Only the owner can change the price"
+    );
   });
 
-  it("Should be able to change price if owner", async function(){
+  it("Should be able to change price if owner", async function () {
     const purchase = await deploy(
       ethers.utils.parseEther("10"),
-      accounts[0].address
-    )
+      accounts[0].address,
+      testCIDs
+    );
     const owner = purchase.connect(accounts[0]);
     await owner.setPrice(ethers.utils.parseEther("11"));
 
-    await expect(await ethers.utils.formatEther(await owner.getPrice())).to.be.equal("11.0")
+    await expect(
+      await ethers.utils.formatEther(await owner.getPrice())
+    ).to.be.equal("11.0");
   });
 
   it("Should be able to buy with right amount", async function () {
     const price = ethers.utils.parseEther("10");
-    const purchase = await deploy(price, accounts[0].address);
+    const purchase = await deploy(price, accounts[0].address, testCIDs);
     const buyer = purchase.connect(accounts[1]);
 
     const buyerInitialBalance = await ethers.provider.getBalance(
@@ -75,6 +84,5 @@ describe("Purchase", function () {
     await expect(
       await ethers.provider.getBalance(accounts[0].address)
     ).to.be.equal(sellerInitialBalance.add(price));
-
   });
 });
