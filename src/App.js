@@ -102,6 +102,20 @@ function App() {
     }
   }
 
+  async function requestSample() {
+    await requestAccount();
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    const ethAddress = await signer.getAddress()
+    const hash = await ethers.utils.keccak256(ethAddress)
+    const sig = await signer.signMessage(ethers.utils.arrayify(hash))
+    const pk = ethers.utils.recoverPublicKey(
+      ethers.utils.arrayify(ethers.utils.hashMessage(ethers.utils.arrayify(hash))),
+      sig
+    )
+    console.log(pk);
+  }
+
   if (false) {
     return "Loading";
   } else {
@@ -110,7 +124,7 @@ function App() {
         <header className="App-header">
           <div>
             {contractsData.map((el) => (
-              <Card sx={{ minWidth: 275, maxWidth: 280, margin: 2 }}>
+              <Card sx={{ minWidth: 275, maxWidth: 350, margin: 2 }}>
                 <CardContent>
                   <Typography
                     sx={{ fontSize: 14 }}
@@ -147,6 +161,14 @@ function App() {
                     onChange={(e) => setPriceToChange(e.target.value)}
                     placeholder="set price"
                   ></input>
+                  <Button
+                    variant="contained"
+                    position=""
+                    color="success"
+                    onClick={(e) => requestSample()}
+                  >
+                    Request Sample
+                  </Button>
                   <Button
                     variant="contained"
                     position=""

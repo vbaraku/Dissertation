@@ -49,7 +49,6 @@ export default function AddProduct() {
     setImages({ files: [...images.files, ...e.target.files] });
   };
 
-  
   const handleSubmit2 = (e) => {
     e.preventDefault();
     console.log(images);
@@ -111,10 +110,10 @@ export default function AddProduct() {
         <DialogContent>
           <DialogContentText id="alert-dialog-slide-description">
             Please provide the wanted amount in Ether:
-            <FormControl sx={{ m: 1, width: "18ch" }} variant="outlined" >
+            <FormControl sx={{ m: 1, width: "18ch" }} variant="outlined">
               <OutlinedInput
                 required
-                style={{height: "1cm"}}
+                style={{ height: "1cm" }}
                 id="outlined-adornment-amount"
                 onChange={(e) => setPriceOfNew(e.target.value)}
                 endAdornment={
@@ -138,7 +137,9 @@ export default function AddProduct() {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleSubmit} disabled={disabledButton}>Create</Button>
+          <Button onClick={handleSubmit} disabled={disabledButton}>
+            Create
+          </Button>
         </DialogActions>
       </Dialog>
     </div>

@@ -47,4 +47,6 @@ contract Purchase {
         require(requestedAmount == msg.value, "invalid amount");
         beneficiary.transfer(msg.value);
     }
+
+    // function requestSample()
 }

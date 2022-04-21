@@ -27,11 +27,13 @@ describe("Factory", function () {
     let purchase2 = Purchase.attach(returnedAddresses[1]);
 
     await expect(await purchase.getOwner()).to.be.equal(accounts[0].address);
+    
     await expect(
       await ethers.utils.formatEther(await purchase.getPrice())
     ).to.be.equal("10.0");
 
     await expect(await purchase2.getOwner()).to.be.equal(accounts[1].address);
+    
     await expect(
       await ethers.utils.formatEther(await purchase2.getPrice())
     ).to.be.equal("11.0");
