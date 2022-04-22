@@ -4,6 +4,7 @@ contract Purchase {
     address payable public beneficiary;
     uint256 public requestedAmount;
     string[] public ipfsCIDs;
+    string[] public interestedBuyers;
 
     constructor(uint256 wantedAmount, address payable creator, string[] memory cids) {
         beneficiary = creator;
@@ -48,5 +49,11 @@ contract Purchase {
         beneficiary.transfer(msg.value);
     }
 
-    // function requestSample()
+    function requestSample(string memory pkOfBuyer) public{
+        interestedBuyers.push(pkOfBuyer);
+    }
+
+    function getInterestedBuyers() public view returns (string[] memory) {
+        return interestedBuyers;
+    }
 }

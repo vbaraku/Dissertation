@@ -102,7 +102,7 @@ function App() {
     }
   }
 
-  async function requestSample() {
+  async function requestSample(address) {
     await requestAccount();
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
@@ -113,7 +113,17 @@ function App() {
       ethers.utils.arrayify(ethers.utils.hashMessage(ethers.utils.arrayify(hash))),
       sig
     )
-    console.log(pk);
+    const contract = new ethers.Contract(address, Purchase.abi, signer);
+      try {
+        const transaction = await contract.requestSample(pk);
+        await transaction.wait();
+        // const transaction2 = await contract.getInterestedBuyers();
+        // console.log(transaction2)
+      } catch (error) {
+        alert("Something went wrong");
+        console.log(error);
+      }
+      console.log(pk);
   }
 
   if (false) {
@@ -165,7 +175,7 @@ function App() {
                     variant="contained"
                     position=""
                     color="success"
-                    onClick={(e) => requestSample()}
+                    onClick={(e) => requestSample(el.address)}
                   >
                     Request Sample
                   </Button>
