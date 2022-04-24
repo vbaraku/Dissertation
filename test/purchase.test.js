@@ -85,4 +85,44 @@ describe("Purchase", function () {
       await ethers.provider.getBalance(accounts[0].address)
     ).to.be.equal(sellerInitialBalance.add(price));
   });
+
+  it("Should return a random hash from an array", async function () {
+    const purchase = await deploy(
+      ethers.utils.parseEther("10"),
+      accounts[0].address,
+      testCIDs
+    );
+    const testHash1 = ethers.utils.keccak256("0x1234");
+    const testHash2 = ethers.utils.keccak256 ("0x5678");
+    const testHash3 = ethers.utils.keccak256 ("0x9999");
+    const testSampleKeys = [testHash1, testHash2, testHash3]
+    const owner = purchase.connect(accounts[0]);
+    
+    await owner.pickHashedSample(testSampleKeys)
+    const pickedSample = await owner.returnRandomHashPicked()
+    await expect(
+      pickedSample
+    ).to.be.equal(testHash1);
+  });
+
+  it("Should return a random hash from an array2", async function () {
+    const purchase = await deploy(
+      ethers.utils.parseEther("10"),
+      accounts[0].address,
+      testCIDs
+    );
+    const testUnHashed = '0x1234';
+    const testHash1 = ethers.utils.keccak256(testUnHashed);
+
+    const testSampleKeys = [testHash1]
+    const owner = purchase.connect(accounts[0]);
+    
+    await owner.pickHashedSample(testSampleKeys)
+    await owner.putUnhashedSample(testUnHashed);
+    const unHashReturned = await owner.returnUnHashedSample();
+
+    await expect(
+      testUnHashed
+    ).to.be.equal(unHashReturned);
+  });
 });
