@@ -8,6 +8,9 @@ contract Purchase {
     bytes32[] public hashedSamples;
     bytes32 public randomHashPicked;
     bytes public unHashedSample;
+    bytes[] public unHashedKeys;
+    address payable public buyerDeposit;
+    uint public depositTime;
 
     constructor(uint256 wantedAmount, address payable creator, string[] memory cids) {
         beneficiary = creator;
@@ -23,10 +26,10 @@ contract Purchase {
         _;
     }
 
-    modifier OnlyOwnerCanSetPrice(){
+    modifier OnlyOwner(){
         require(
             msg.sender == beneficiary,
-            "Only the owner can change the price"
+            "Only the owner can do this action"
         );
         _;
     }
@@ -35,16 +38,12 @@ contract Purchase {
         return requestedAmount;
     }
 
-    function setPrice(uint256 newPrice) public OnlyOwnerCanSetPrice {
+    function setPrice(uint256 newPrice) public OnlyOwner {
         requestedAmount = newPrice;
     }
 
     function getOwner() public view returns (address owner) {
         return beneficiary;
-    }
-
-    function getCIDs() public view returns (string[] memory) {
-        return ipfsCIDs;
     }
 
     function buy() public payable SellerCantBuy {
@@ -78,5 +77,35 @@ contract Purchase {
 
     function returnUnHashedSample() public view returns (bytes memory unHashed){
         return unHashedSample;
+    }
+
+    function purchaseProducts() public payable SellerCantBuy{
+        require(address(this).balance >= requestedAmount, "there is deposited money");
+        require(requestedAmount == msg.value, "invalid amount");
+        buyerDeposit = payable(msg.sender);
+        depositTime = block.timestamp;
+    }
+
+    function returnDeposit() public {
+        require(msg.sender == buyerDeposit, "You have nothing deposited");
+        require(block.timestamp - depositTime > 86400, "24 hours have not passed yet, please wait");
+        buyerDeposit.transfer(address(this).balance);
+    }
+
+    function withdraw(bytes[] memory uhashedKeys) public OnlyOwner{
+        require(address(this).balance != 0, "there is no deposited money");
+        require(uhashedKeys.length == hashedSamples.length);
+        for(uint i =0; i < uhashedKeys.length ; i++){
+            require(hashedSamples[i] == keccak256(uhashedKeys[i]), "product does not match the originally uploaded one");
+        }
+        unHashedKeys = uhashedKeys;
+        beneficiary.transfer(address(this).balance);
+    }
+
+
+    function getProduct() public returns (bytes[] memory, string[] memory) {
+        require(msg.sender == buyerDeposit, "You can not collect this product");
+        return (unHashedKeys, ipfsCIDs);
+
     }
 }

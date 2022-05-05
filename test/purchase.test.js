@@ -41,7 +41,7 @@ describe("Purchase", function () {
     const buyer = purchase.connect(accounts[1]);
 
     await expect(buyer.setPrice(5)).to.be.revertedWith(
-      "Only the owner can change the price"
+      "Only the owner can do this action"
     );
   });
 
@@ -105,7 +105,7 @@ describe("Purchase", function () {
     ).to.be.equal(testHash1);
   });
 
-  it("Should return a random hash from an array2", async function () {
+  it("Should match unhashed to the initial hash", async function () {
     const purchase = await deploy(
       ethers.utils.parseEther("10"),
       accounts[0].address,
