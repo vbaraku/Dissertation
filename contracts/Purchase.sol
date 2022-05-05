@@ -11,11 +11,13 @@ contract Purchase {
     bytes[] public unHashedKeys;
     address payable public buyerDeposit;
     uint public depositTime;
+    bool public isFinished;
 
     constructor(uint256 wantedAmount, address payable creator, string[] memory cids) {
         beneficiary = creator;
         requestedAmount = wantedAmount;
         ipfsCIDs = cids;
+        isFinished = false;
     }
 
     modifier SellerCantBuy() {
@@ -57,6 +59,10 @@ contract Purchase {
 
     function getInterestedBuyers() public view returns (string[] memory) {
         return interestedBuyers;
+    }
+
+    function getCIDs() public view returns (string[] memory){
+        return ipfsCIDs;
     }
 
     function pickHashedSample(bytes32[] memory hashedKeys) public {
@@ -103,6 +109,7 @@ contract Purchase {
 
     function getProduct() public returns (bytes[] memory, string[] memory) {
         require(msg.sender == buyerDeposit, "You can not collect this product");
+        isFinished = true;
         return (unHashedKeys, ipfsCIDs);
     }
 }
