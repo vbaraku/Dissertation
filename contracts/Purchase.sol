@@ -80,7 +80,6 @@ contract Purchase {
     }
 
     function purchaseProducts() public payable SellerCantBuy{
-        require(address(this).balance >= requestedAmount, "there is deposited money");
         require(requestedAmount == msg.value, "invalid amount");
         buyerDeposit = payable(msg.sender);
         depositTime = block.timestamp;
@@ -102,10 +101,8 @@ contract Purchase {
         beneficiary.transfer(address(this).balance);
     }
 
-
     function getProduct() public returns (bytes[] memory, string[] memory) {
         require(msg.sender == buyerDeposit, "You can not collect this product");
         return (unHashedKeys, ipfsCIDs);
-
     }
 }
