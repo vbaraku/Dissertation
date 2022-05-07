@@ -13,6 +13,7 @@ import OutlinedInput from "@mui/material/OutlinedInput";
 import InputAdornment from "@mui/material/InputAdornment";
 import FormControl from "@mui/material/FormControl";
 import * as IPFS from "ipfs-core";
+import Input from "@mui/material/Input";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -23,6 +24,7 @@ export default function AddProduct() {
   const [open, setOpen] = React.useState(false);
 
   const [priceOfNew, setPriceOfNew] = React.useState();
+  const [titleOfNew, setTitleOfNew] = React.useState();
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -70,6 +72,7 @@ export default function AddProduct() {
 
   const handleSubmit = async () => {
     if (!priceOfNew) return;
+    if (!titleOfNew) return;
     if (typeof window.ethereum !== "undefined") {
       await requestAccount();
       const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -81,6 +84,7 @@ export default function AddProduct() {
       );
       try {
         const transaction = await contract.createPurchase(
+          titleOfNew,
           ethers.utils.parseEther(priceOfNew),
           ipfsCIDs
         );
@@ -108,6 +112,21 @@ export default function AddProduct() {
       >
         <DialogTitle>{"Add new product"}</DialogTitle>
         <DialogContent>
+        <DialogContentText id="alert-dialog-slide-description">
+            Please provide a title for the product:
+            <FormControl sx={{ m: 1, width: "18ch" }} variant="outlined">
+              <OutlinedInput
+                required
+                style={{ height: "1cm" }}
+                id="outlined-adornment-title"
+                onChange={(e) => setTitleOfNew(e.target.value)}
+                
+                inputProps={{
+                  "aria-label": "Title",
+                }}
+              />
+            </FormControl>
+          </DialogContentText>
           <DialogContentText id="alert-dialog-slide-description">
             Please provide the wanted amount in Ether:
             <FormControl sx={{ m: 1, width: "18ch" }} variant="outlined">

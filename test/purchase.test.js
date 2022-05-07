@@ -3,14 +3,16 @@ const { ethers } = require("hardhat");
 const deploy = require("../lib/deploy");
 
 describe("Purchase", function () {
+  const testTitle = "Title";
   let accounts;
   let testCIDs = ["abc", "def"];
   before(async () => {
     accounts = await ethers.getSigners();
   });
-
+  
   it("Should not be able to buy own product", async function () {
     const purchase = await deploy(
+      "test",
       ethers.utils.parseEther("10"),
       accounts[0].address,
       testCIDs
@@ -23,6 +25,7 @@ describe("Purchase", function () {
 
   it("Should not be able to buy without right funds", async function () {
     const purchase = await deploy(
+      testTitle,
       ethers.utils.parseEther("10"),
       accounts[0].address,
       testCIDs
@@ -34,6 +37,7 @@ describe("Purchase", function () {
 
   it("Should not be able to change price if not owner", async function () {
     const purchase = await deploy(
+      testTitle,
       ethers.utils.parseEther("10"),
       accounts[0].address,
       testCIDs
@@ -47,6 +51,7 @@ describe("Purchase", function () {
 
   it("Should be able to change price if owner", async function () {
     const purchase = await deploy(
+      testTitle,
       ethers.utils.parseEther("10"),
       accounts[0].address,
       testCIDs
@@ -61,7 +66,7 @@ describe("Purchase", function () {
 
   it("Should be able to buy with right amount", async function () {
     const price = ethers.utils.parseEther("10");
-    const purchase = await deploy(price, accounts[0].address, testCIDs);
+    const purchase = await deploy(testTitle, price, accounts[0].address, testCIDs);
     const buyer = purchase.connect(accounts[1]);
 
     const buyerInitialBalance = await ethers.provider.getBalance(
@@ -88,13 +93,14 @@ describe("Purchase", function () {
 
   it("Should return a random hash from an array", async function () {
     const purchase = await deploy(
+      testTitle,
       ethers.utils.parseEther("10"),
       accounts[0].address,
       testCIDs
     );
-    const testHash1 = ethers.utils.keccak256("0x1234");
-    const testHash2 = ethers.utils.keccak256("0x5678");
-    const testHash3 = ethers.utils.keccak256("0x9999");
+    const testHash1 = "0x9c22ff5f21f0b81b113e63f7db6da94fedef11b2119b4088b89664fb9a3cb658";
+    const testHash2 = "0x6d255fc3390ee6b41191da315958b7d6a1e5b17904cc7683558f98acc57977b4";
+    const testHash3 = "0x4da432f1ecd4c0ac028ebde3a3f78510a21d54087b161590a63080d33b702b8d";
     const testSampleKeys = [testHash1, testHash2, testHash3];
     const owner = purchase.connect(accounts[0]);
 
@@ -105,12 +111,13 @@ describe("Purchase", function () {
 
   it("Should match unhashed to the initial hash", async function () {
     const purchase = await deploy(
+      testTitle,
       ethers.utils.parseEther("10"),
       accounts[0].address,
       testCIDs
     );
-    const testUnHashed = "0x1234";
-    const testHash1 = ethers.utils.keccak256(testUnHashed);
+    const testUnHashed = "test1";
+    const testHash1 = "0x6d255fc3390ee6b41191da315958b7d6a1e5b17904cc7683558f98acc57977b4";
 
     const testSampleKeys = [testHash1];
     const owner = purchase.connect(accounts[0]);
@@ -124,6 +131,7 @@ describe("Purchase", function () {
 
   it("Should be able to purchase", async function () {
     const purchase = await deploy(
+      testTitle,
       ethers.utils.parseEther("10"),
       accounts[0].address,
       testCIDs
@@ -145,6 +153,7 @@ describe("Purchase", function () {
 
   it("Should be able to withdraw", async function () {
     const purchase = await deploy(
+      testTitle,
       ethers.utils.parseEther("20"),
       accounts[0].address,
       testCIDs
@@ -156,11 +165,11 @@ describe("Purchase", function () {
     const buyer = purchase.connect(accounts[1]);
     const price = ethers.utils.parseEther("20");
 
-    const testHash1 = ethers.utils.keccak256("0x1234");
-    const testHash2 = ethers.utils.keccak256("0x5678");
-    const testHash3 = ethers.utils.keccak256("0x9999");
+    const testHash1 = "0x9c22ff5f21f0b81b113e63f7db6da94fedef11b2119b4088b89664fb9a3cb658";
+    const testHash2 = "0x6d255fc3390ee6b41191da315958b7d6a1e5b17904cc7683558f98acc57977b4";
+    const testHash3 = "0x4da432f1ecd4c0ac028ebde3a3f78510a21d54087b161590a63080d33b702b8d";
     const testSampleKeys = [testHash1, testHash2, testHash3];
-    const testUnHashedKeys = ["0x1234", "0x5678", "0x9999"];
+    const testUnHashedKeys = ["test", "test1", "test2"];
 
     const transaction1 = await owner.pickHashedSample(testSampleKeys);
     const receipt1 = await transaction1.wait();

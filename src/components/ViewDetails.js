@@ -63,12 +63,22 @@ export default function ViewDetails(props) {
       }
       else{
         let longString = document.getElementById("hashedKeys").value;
-        let arrayString = longString.split(",");
-        let inBytes = [];
-        arrayString.forEach(element => {
-            inBytes.push(ethers.utils.formatBytes32String(element))
-        });
-        console.log(inBytes);
+        let arrayString = longString.split(",").map(el=>"0x"+el);
+
+        try {
+          const transaction = await contract.pickHashedSample(arrayString);
+          await transaction.wait();
+        } catch (error) {
+          alert("Something went wrong");
+          console.log(error);
+        }
+        // alert(await contract.returnRandomHashPicked());
+        // let inBytes = [];
+        // arrayString.forEach(element => {
+        //     inBytes.push(bytes(element))
+        // });
+        // console.log(inBytes);
+
       }
   }
   return (
@@ -86,7 +96,7 @@ export default function ViewDetails(props) {
       >
         <DialogTitle>Contract Information</DialogTitle>
         <DialogContent>
-          <DialogContentText>Title: XX</DialogContentText>
+          <DialogContentText>Title: {props.title}</DialogContentText>
           <DialogContentText>Owner: {props.owner}</DialogContentText>
           <DialogContentText>Price: {props.price} Eth</DialogContentText>
           <DialogContentText>

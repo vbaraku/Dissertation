@@ -43,12 +43,14 @@ function Home() {
           });
           setContracts(tempArray);
           const promises = tempArray.map(async (e) => {
+            let title1 = await e.getTitle();
             let price1 = ethers.utils.formatEther(await e.getPrice());
             let owner1 = await e.getOwner();
             let cids1 = await e.getCIDs();
             let interestedBuyers1 = await e.getInterestedBuyers();
             let address1 = e.address;
             let data = {
+              title: title1,
               price: price1,
               owner: owner1,
               cids: cids1,
@@ -171,17 +173,17 @@ function Home() {
                       color="text.secondary"
                       gutterBottom
                     >
-                      This is a smart contract
+                      Owner: {el.owner}
                     </Typography>
                     <Typography variant="h5" component="div">
-                      Owner:
+                      Title:
                     </Typography>
                     <Typography
                       noWrap={true}
                       sx={{ mb: 1.5 }}
                       color="text.secondary"
                     >
-                      {el.owner}
+                      {el.title}
                     </Typography>
                     <Typography variant="body2">
                       The price of this product is:
@@ -218,6 +220,7 @@ function Home() {
                         Buy
                       </Button> */}
                     <ViewDetails
+                      title={el.title}
                       address={el.address}
                       cids={el.cids}
                       owner={el.owner}

@@ -7,15 +7,19 @@ contract ContractFactory {
 
     event contractCreated(
         address contractAddress,
+        string title,
         uint256 wantedAmount,
         address owner,
         string[] ipfsCIDs
     );
 
-    function createPurchase(uint256 wantedAmount, string[] memory ipfsCIDs)
-        public
-    {
+    function createPurchase(
+        string memory title,
+        uint256 wantedAmount,
+        string[] memory ipfsCIDs
+    ) public {
         Purchase purchase = new Purchase(
+            title,
             wantedAmount,
             payable(msg.sender),
             ipfsCIDs
@@ -23,6 +27,7 @@ contract ContractFactory {
         _purchases.push(purchase);
         emit contractCreated(
             address(purchase),
+            title,
             wantedAmount,
             msg.sender,
             ipfsCIDs
