@@ -123,6 +123,19 @@ export default function ViewDetails(props) {
         console.log(error);
       }
     }
+
+    async function withdrawFunds() {
+      try {
+        let productKeys = document.getElementById("withdraw").value.split(",");
+        const transaction = await contract.withdraw(productKeys);
+        // alert(
+        //   "The ether has been deposited. Owner has 24h to provide the rest of the keys." 
+        // );
+      } catch (error) {
+        alert("Something went wrong");
+        console.log(error);
+      }
+    }
     
 
   return (
@@ -176,10 +189,10 @@ export default function ViewDetails(props) {
             Purchase request
           </Button>
           <br></br>
-          <Button sx={{ margin: "5px" }} variant="contained" color="success">
+          <Button sx={{ margin: "5px" }} variant="contained" color="success" onClick={withdrawFunds}>
             Withdraw funds
           </Button>
-          <Input></Input>
+          <Input id="withdraw"></Input>
           <Box
             noValidate
             component="form"
