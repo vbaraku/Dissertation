@@ -32,9 +32,9 @@ export default function ViewDetails(props) {
   const handleClose = () => {
     setOpen(false);
   };
-//   async function requestAccount() {
-//     await window.ethereum.request({ method: "eth_requestAccounts" });
-//   }
+  //   async function requestAccount() {
+  //     await window.ethereum.request({ method: "eth_requestAccounts" });
+  //   }
 
   async function requestSample() {
     const ethAddress = await signer.getAddress();
@@ -58,29 +58,73 @@ export default function ViewDetails(props) {
   }
 
   async function provideHashedKeys() {
-      if(document.getElementById("hashedKeys").value == ""){
-          alert("Hashed keys field cannot be empty")
-      }
-      else{
-        let longString = document.getElementById("hashedKeys").value;
-        let arrayString = longString.split(",").map(el=>"0x"+el);
+    if (document.getElementById("hashedKeys").value == "") {
+      alert("Hashed keys field cannot be empty");
+    } else {
+      let longString = document.getElementById("hashedKeys").value;
+      let arrayString = longString.split(",").map((el) => "0x" + el);
 
-        try {
-          const transaction = await contract.pickHashedSample(arrayString);
-          await transaction.wait();
-        } catch (error) {
-          alert("Something went wrong");
-          console.log(error);
-        }
-        // alert(await contract.returnRandomHashPicked());
-        // let inBytes = [];
-        // arrayString.forEach(element => {
-        //     inBytes.push(bytes(element))
-        // });
-        // console.log(inBytes);
-
+      try {
+        const transaction = await contract.pickHashedSample(arrayString);
+        await transaction.wait();
+        const transaction2 = await contract.returnRandomHashPicked();
+        alert(
+          "The random hash that was picked and needs to be provided unhashed is: " +
+            transaction2
+        );
+      } catch (error) {
+        alert("Something went wrong");
+        console.log(error);
       }
+    }
   }
+
+  async function provideUnHashedKeys() {
+    if (document.getElementById("unHashedKeys").value == "") {
+      alert("Un-Hashed keys field cannot be empty");
+    } else {
+      let unHashedKey = document.getElementById("unHashedKeys").value;
+
+      try {
+        const transaction = await contract.putUnhashedSample(unHashedKey);
+        await transaction.wait();
+        alert(
+          "The unhashed key was delivered"
+        );
+      } catch (error) {
+        alert("Something went wrong");
+        console.log(error);
+      }
+    }
+  }
+
+  async function viewSampleKey() {
+      try {
+        const transaction = await contract.returnUnHashedSample();
+        alert(
+          "The unhashed key is: " + transaction
+        );
+      } catch (error) {
+        alert("Something went wrong");
+        console.log(error);
+      }
+    }
+  
+    async function purchaseRequest() {
+      try {
+        const transaction = await contract.purchaseProducts({
+          value: ethers.utils.parseEther(props.price),
+        });
+        alert(
+          "The ether has been deposited. Owner has 24h to provide the rest of the keys." 
+        );
+      } catch (error) {
+        alert("Something went wrong");
+        console.log(error);
+      }
+    }
+    
+
   return (
     <React.Fragment>
       <Button variant="outlined" onClick={handleClickOpen}>
@@ -102,25 +146,33 @@ export default function ViewDetails(props) {
           <DialogContentText>
             Interested Buyer: {props.interestedBuyers}
           </DialogContentText>
-          <Button sx={{ margin: "5px" }} variant="outlined" onClick={requestSample}>
+          <Button
+            sx={{ margin: "5px" }}
+            variant="outlined"
+            onClick={requestSample}
+          >
             Request Sample
           </Button>
           <br></br>
-          <Button sx={{ margin: "5px" }} variant="outlined" onClick={provideHashedKeys}>
+          <Button
+            sx={{ margin: "5px" }}
+            variant="outlined"
+            onClick={provideHashedKeys}
+          >
             Provide hashed keys
           </Button>
           <Input id="hashedKeys"></Input>
           <br></br>
-          <Button sx={{ margin: "5px" }} variant="outlined">
+          <Button sx={{ margin: "5px" }} variant="outlined" onClick={provideUnHashedKeys}>
             Provide non-hashed key
           </Button>
-          <Input></Input>
+          <Input id="unHashedKeys"></Input>
           <br></br>
-          <Button sx={{ margin: "5px" }} variant="outlined">
+          <Button sx={{ margin: "5px" }} variant="outlined" onClick={viewSampleKey}>
             View sample key
           </Button>
           <br></br>
-          <Button sx={{ margin: "5px" }} variant="contained" color="success">
+          <Button sx={{ margin: "5px" }} variant="contained" color="success" onClick={purchaseRequest}>
             Purchase request
           </Button>
           <br></br>
