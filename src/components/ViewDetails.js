@@ -148,16 +148,15 @@ export default function ViewDetails(props) {
     async function getKeys(){
       try {
         const transaction = await contract.getProduct();
-        console.log(transaction.value)
-        alert("Keys are: " + transaction.value + ". Cids are: " )
+        const finish = await contract.finish();
+        console.log(transaction)
+        alert("Keys are: " + transaction + ". Cids" + props.cids)
         
       } catch (error) {
         alert("Something went wrong");
         console.log(error);
       }
     }
-    
-    
 
   return (
     <React.Fragment>

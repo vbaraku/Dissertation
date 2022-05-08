@@ -151,9 +151,12 @@ contract Purchase {
         beneficiary.transfer(address(this).balance);
     }
 
-    function getProduct() public returns (string[] memory) {
+    function getProduct() public view returns (string[] memory) {
         require(msg.sender == buyerDeposit, "You can not collect this product");
-        isFinished = true;
         return unHashedKeys;
+    }
+    function finish() public {
+        require(msg.sender == buyerDeposit, "you cannot call this function");
+        isFinished = true;
     }
 }
