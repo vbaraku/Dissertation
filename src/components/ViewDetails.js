@@ -63,14 +63,13 @@ export default function ViewDetails(props) {
     } else {
       let longString = document.getElementById("hashedKeys").value;
       let arrayString = longString.split(",").map((el) => "0x" + el);
-
       try {
         const transaction = await contract.pickHashedSample(arrayString);
         await transaction.wait();
         const transaction2 = await contract.returnRandomHashPicked();
         alert(
-          "The random hash that was picked and needs to be provided unhashed is: " +
-            transaction2
+          "The random hash that was picked and needs to be provided unhashed is hash nr " +
+            transaction2[1] + ". " + transaction2[0]
         );
       } catch (error) {
         alert("Something went wrong");
@@ -101,8 +100,9 @@ export default function ViewDetails(props) {
   async function viewSampleKey() {
       try {
         const transaction = await contract.returnUnHashedSample();
+        console.log(transaction);
         alert(
-          "The unhashed key is: " + transaction
+          "The unhashed key is: " + transaction[0] + " with CID: " + props.cids[transaction[1]]
         );
       } catch (error) {
         alert("Something went wrong");
@@ -128,14 +128,35 @@ export default function ViewDetails(props) {
       try {
         let productKeys = document.getElementById("withdraw").value.split(",");
         const transaction = await contract.withdraw(productKeys);
-        // alert(
-        //   "The ether has been deposited. Owner has 24h to provide the rest of the keys." 
-        // );
+        
       } catch (error) {
         alert("Something went wrong");
         console.log(error);
       }
     }
+
+    async function cancelPurchase(){
+      try {
+        const transaction = await contract.returnDeposit();
+        
+      } catch (error) {
+        alert("Something went wrong");
+        console.log(error);
+      }
+    }
+
+    async function getKeys(){
+      try {
+        const transaction = await contract.getProduct();
+        console.log(transaction.value)
+        alert("Keys are: " + transaction.value + ". Cids are: " )
+        
+      } catch (error) {
+        alert("Something went wrong");
+        console.log(error);
+      }
+    }
+    
     
 
   return (
@@ -188,11 +209,18 @@ export default function ViewDetails(props) {
           <Button sx={{ margin: "5px" }} variant="contained" color="success" onClick={purchaseRequest}>
             Purchase request
           </Button>
+          <Button sx={{ margin: "5px" }} variant="contained" color="error" onClick={cancelPurchase}>
+            Cancel purchase
+          </Button>
           <br></br>
           <Button sx={{ margin: "5px" }} variant="contained" color="success" onClick={withdrawFunds}>
             Withdraw funds
           </Button>
           <Input id="withdraw"></Input>
+          <br></br>
+          <Button sx={{ margin: "5px" }} variant="contained" color="success" onClick={getKeys}>
+            Get product keys
+          </Button>
           <Box
             noValidate
             component="form"

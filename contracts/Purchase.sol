@@ -15,6 +15,7 @@ contract Purchase {
     address payable public buyerDeposit;
     uint256 public depositTime;
     bool public isFinished;
+    uint256 public randomSampleId;
 
     constructor(
         string memory title1,
@@ -25,7 +26,7 @@ contract Purchase {
         title = title1;
         beneficiary = creator;
         requestedAmount = wantedAmount;
-        ipfsCIDs = cids;
+        ipfsCIDs = cids;    
         isFinished = false;
     }
 
@@ -80,15 +81,16 @@ contract Purchase {
         uint256 randomIndex = uint256(
             keccak256(abi.encodePacked(block.timestamp, msg.sender))
         ) % hashedKeys.length;
+        randomSampleId = randomIndex;
         randomHashPicked = hashedKeys[randomIndex];
     }
 
     function returnRandomHashPicked()
         public
         view
-        returns (string memory randHash)
+        returns (string memory randHash, uint256 hashId)
     {
-        return randomHashPicked;
+        return (randomHashPicked, randomSampleId);
     }
 
     function putUnhashedSample(string memory unHashedS) public {
@@ -104,12 +106,12 @@ contract Purchase {
         unHashedSample = unHashedS;
     }
 
-    function returnUnHashedSample()
-        public
-        view
-        returns (string memory unHashed)
-    {
-        return unHashedSample;
+    function returnUnHashedSample() public view returns (string memory unHashed, uint cidSample){
+        return (unHashedSample, randomSampleId);
+    }
+
+    function returnSampleid() public view returns(uint256 Id){
+        return randomSampleId;
     }
 
     function purchaseProducts() public payable SellerCantBuy {
@@ -149,9 +151,9 @@ contract Purchase {
         beneficiary.transfer(address(this).balance);
     }
 
-    function getProduct() public returns (string[] memory, string[] memory) {
+    function getProduct() public returns (string[] memory) {
         require(msg.sender == buyerDeposit, "You can not collect this product");
         isFinished = true;
-        return (unHashedKeys, ipfsCIDs);
+        return unHashedKeys;
     }
 }

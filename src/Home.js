@@ -231,7 +231,7 @@ function Home() {
                   </CardActions>
                 </Card>
               ))}
-              <AddProduct></AddProduct>
+              <AddProduct func={fetchData}></AddProduct>
             </Grid>
           </Grid>
         </div>

@@ -19,7 +19,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function AddProduct() {
+export default function AddProduct(props) {
   const factoryAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
   const [open, setOpen] = React.useState(false);
 
@@ -95,7 +95,8 @@ export default function AddProduct() {
       }
     }
     setOpen(false);
-    window.location.reload(); // NEEDS TO BE CHANGED LATER TO UPDATE WITHOUT RELOADING
+    props.func();
+    
   };
 
   return (

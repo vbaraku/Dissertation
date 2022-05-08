@@ -106,7 +106,9 @@ describe("Purchase", function () {
 
     await owner.pickHashedSample(testSampleKeys);
     const pickedSample = await owner.returnRandomHashPicked();
-    await expect(pickedSample).to.be.equal(testHash1);
+    const pickedSampleNumber = await owner.returnSampleid();
+    console.log(pickedSampleNumber);
+    expect(testSampleKeys.includes(pickedSample.randHash)).to.equal(true)
   });
 
   it("Should match unhashed to the initial hash", async function () {
@@ -126,7 +128,7 @@ describe("Purchase", function () {
     await owner.putUnhashedSample(testUnHashed);
     const unHashReturned = await owner.returnUnHashedSample();
 
-    await expect(testUnHashed).to.be.equal(unHashReturned);
+    await expect(testUnHashed).to.be.equal(unHashReturned[0]);
   });
 
   it("Should be able to purchase", async function () {
