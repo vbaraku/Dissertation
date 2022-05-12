@@ -83,7 +83,6 @@ export default function ViewDetails(props) {
       alert("Un-Hashed keys field cannot be empty");
     } else {
       let unHashedKey = document.getElementById("unHashedKeys").value;
-
       try {
         const transaction = await contract.putUnhashedSample(unHashedKey);
         await transaction.wait();

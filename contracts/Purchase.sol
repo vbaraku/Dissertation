@@ -26,7 +26,7 @@ contract Purchase {
         title = title1;
         beneficiary = creator;
         requestedAmount = wantedAmount;
-        ipfsCIDs = cids;    
+        ipfsCIDs = cids;
         isFinished = false;
     }
 
@@ -85,11 +85,7 @@ contract Purchase {
         randomHashPicked = hashedKeys[randomIndex];
     }
 
-    function returnRandomHashPicked()
-        public
-        view
-        returns (string memory randHash, uint256 hashId)
-    {
+    function returnRandomHashPicked() public view returns (string memory randHash, uint256 hashId){
         return (randomHashPicked, randomSampleId);
     }
 
@@ -106,11 +102,15 @@ contract Purchase {
         unHashedSample = unHashedS;
     }
 
-    function returnUnHashedSample() public view returns (string memory unHashed, uint cidSample){
+    function returnUnHashedSample()
+        public
+        view
+        returns (string memory unHashed, uint256 cidSample)
+    {
         return (unHashedSample, randomSampleId);
     }
 
-    function returnSampleid() public view returns(uint256 Id){
+    function returnSampleid() public view returns (uint256 Id) {
         return randomSampleId;
     }
 
@@ -133,16 +133,9 @@ contract Purchase {
         require(address(this).balance != 0, "there is no deposited money");
         require(uhashedKeys.length == hashedSamples.length);
         for (uint256 i = 0; i < uhashedKeys.length; i++) {
-            require(
-                keccak256(
-                    abi.encodePacked(
-                        Strings.toHexString(
-                            uint256(
-                                keccak256(abi.encodePacked(uhashedKeys[i]))
-                            ),
-                            32
-                        )
-                    )
+            require(keccak256(abi.encodePacked(Strings.toHexString(
+                        uint256(keccak256(abi.encodePacked(uhashedKeys[i]))), 32
+                    ))
                 ) == keccak256(abi.encodePacked(hashedSamples[i])),
                 "product does not match the originally uploaded one"
             );
@@ -155,6 +148,7 @@ contract Purchase {
         require(msg.sender == buyerDeposit, "You can not collect this product");
         return unHashedKeys;
     }
+
     function finish() public {
         require(msg.sender == buyerDeposit, "you cannot call this function");
         isFinished = true;
