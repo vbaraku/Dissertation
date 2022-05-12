@@ -107,7 +107,6 @@ describe("Purchase", function () {
     await owner.pickHashedSample(testSampleKeys);
     const pickedSample = await owner.returnRandomHashPicked();
     const pickedSampleNumber = await owner.returnSampleid();
-    console.log(pickedSampleNumber);
     expect(testSampleKeys.includes(pickedSample.randHash)).to.equal(true)
   });
 
@@ -184,14 +183,8 @@ describe("Purchase", function () {
     const receipt2 = await transaction2.wait();
     const gasUsed2 = receipt2.cumulativeGasUsed.mul(receipt2.effectiveGasPrice);
 
-    const transaction3 = await buyer.getProduct();
-    const result = await transaction3.wait();
-    console.log(result);
-
     await expect(
       await ethers.provider.getBalance(accounts[0].address)
     ).to.be.equal(ownerInitialBalance.add(price).sub(gasUsed1).sub(gasUsed2));
-
-   
   });
 });
