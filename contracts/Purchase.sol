@@ -76,7 +76,7 @@ contract Purchase {
         return ipfsCIDs;
     }
 
-    function pickHashedSample(string[] memory hashedKeys) public {
+    function pickHashedSample(string[] memory hashedKeys) public OnlyOwner {
         hashedSamples = hashedKeys;
         uint256 randomIndex = uint256(
             keccak256(abi.encodePacked(block.timestamp, msg.sender))
@@ -89,7 +89,7 @@ contract Purchase {
         return (randomHashPicked, randomSampleId);
     }
 
-    function putUnhashedSample(string memory unHashedS) public {
+    function putUnhashedSample(string memory unHashedS) public OnlyOwner{
         string memory hashingToCompare = Strings.toHexString(
             uint256(keccak256(abi.encodePacked(unHashedS))),
             32
