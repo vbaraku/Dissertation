@@ -72,7 +72,7 @@ export default function ViewDetails(props) {
             transaction2[1] + ". " + transaction2[0]
         );
       } catch (error) {
-        alert("Something went wrong");
+        alert("Only the owner can provide keys");
         console.log(error);
       }
     }
@@ -90,7 +90,7 @@ export default function ViewDetails(props) {
           "The unhashed key was delivered"
         );
       } catch (error) {
-        alert("Something went wrong");
+        alert("Only the owner can provide keys");
         console.log(error);
       }
     }
@@ -118,7 +118,7 @@ export default function ViewDetails(props) {
           "The ether has been deposited. Owner has 24h to provide the rest of the keys." 
         );
       } catch (error) {
-        alert("Something went wrong");
+        alert("Owner cannot buy");
         console.log(error);
       }
     }
@@ -129,7 +129,7 @@ export default function ViewDetails(props) {
         const transaction = await contract.withdraw(productKeys);
         
       } catch (error) {
-        alert("Something went wrong");
+        alert("Keys do not match the originally uploaded ones");
         console.log(error);
       }
     }
@@ -139,7 +139,7 @@ export default function ViewDetails(props) {
         const transaction = await contract.returnDeposit();
         
       } catch (error) {
-        alert("Something went wrong");
+        alert("24h have not passed yet");
         console.log(error);
       }
     }
@@ -152,7 +152,7 @@ export default function ViewDetails(props) {
         alert("Keys are: " + transaction + ". Cids" + props.cids)
         
       } catch (error) {
-        alert("Something went wrong");
+        alert("Only the buyer can get the keys");
         console.log(error);
       }
     }
