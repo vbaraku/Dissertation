@@ -7,6 +7,7 @@ import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
+import { ethers } from "ethers";
 
 import DialogContentText from "@mui/material/DialogContentText";
 
@@ -40,13 +41,10 @@ function EncryptionTools() {
       images.files.map(async (element) => {
         const key = new Uint8Array(16);
         window.crypto.getRandomValues(key);
-        const buffer = new Uint8Array(await element.arrayBuffer())
-        // console.log(buffer)
-        // const fileBytes = aesjs.utils.arrayBuffer.toBytes(buffer);
+        const buffer = new Uint8Array(await element.arrayBuffer());
         const ctr = new aesjs.ModeOfOperation.ctr(key);
         const encryptedFile = ctr.encrypt(buffer);
         const encryptedFileHex = aesjs.utils.hex.fromBytes(encryptedFile);
-        //console.log(encryptedFileHex);
         var keyHex = aesjs.utils.hex.fromBytes(key);
         keysArray.push(keyHex);
         encryptedFilesArray.push(encryptedFileHex);
@@ -84,8 +82,6 @@ function EncryptionTools() {
   async function decryptAES() {
     const key = await keys.files[0].text();
     let keyArray = key.split(",");
-    console.log("Key array");
-    console.log(keyArray);
     let decryptedFilesArray = new Array();
     await Promise.all(
       images.files.map(async (element, index) => {
@@ -94,17 +90,13 @@ function EncryptionTools() {
           aesjs.utils.hex.toBytes(keyArray[index])
         );
         const decryptedFile = ctr.decrypt(fileBytes);
-        console.log("DECRYPTED HEX");
-        console.log(aesjs.utils.hex.fromBytes(decryptedFile));
         decryptedFilesArray.push(decryptedFile);
       })
     );
-    alert(
-      "Files decrypted and will be downloaded."
-    );
+    alert("Files decrypted and will be downloaded.");
 
     decryptedFilesArray.forEach((hex, index) => {
-      const blob = new Blob([hex], { type: 'image/png' });
+      const blob = new Blob([hex], { type: "image/png" });
       if (window.navigator.msSaveOrOpenBlob) {
         window.navigator.msSaveBlob(blob, index);
       } else {
@@ -117,6 +109,31 @@ function EncryptionTools() {
       }
     });
     window.location.reload();
+  }
+  
+  //NOTE CHANGE HASH AT VIEWDETAILS (REMOX 0X)
+  async function hash() {
+    const key = await keys.files[0].text();
+    let hashedKeys = new Array();
+    let keyArray = key.split(",");
+    keyArray.forEach((el) => {
+      const hashKey = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(el));
+      hashedKeys.push(hashKey);
+    });
+    console.log(hashedKeys);
+    alert(
+      "Keys hashed and will be downloaded"
+    );
+    var element = document.createElement("a");
+    element.setAttribute(
+      "href",
+      "data:text/plain;charset=utf-8," + encodeURIComponent(hashedKeys)
+    );
+    element.setAttribute("download", "KeysHashed");
+    element.style.display = "none";
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
   }
 
   return (
@@ -208,6 +225,33 @@ function EncryptionTools() {
               <CardActions>
                 <Button size="small" onClick={decryptAES}>
                   Decrypt images
+                </Button>
+              </CardActions>
+            </Card>
+            <Card sx={{ minWidth: 275 }}>
+              <CardContent>
+                <Typography
+                  sx={{ fontSize: 14 }}
+                  color="text.secondary"
+                  gutterBottom
+                >
+                  Keccak256 hashing
+                </Typography>
+                <Typography sx={{ mb: 1.5 }} color="text.secondary">
+                  Upload keys to hash:
+                </Typography>
+                <DialogContentText>
+                  <input
+                    type="file"
+                    multiple
+                    name="data"
+                    onChange={retrieveKeys}
+                  />
+                </DialogContentText>
+              </CardContent>
+              <CardActions>
+                <Button size="small" onClick={hash}>
+                  Hash keys
                 </Button>
               </CardActions>
             </Card>

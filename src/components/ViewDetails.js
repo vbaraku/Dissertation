@@ -38,7 +38,7 @@ export default function ViewDetails(props) {
 
   async function requestSample() {
     const ethAddress = await signer.getAddress();
-    const hash = await ethers.utils.keccak256(ethAddress);
+    const hash = ethers.utils.keccak256(ethAddress);
     const sig = await signer.signMessage(ethers.utils.arrayify(hash));
     const pk = ethers.utils.recoverPublicKey(
       ethers.utils.arrayify(
@@ -62,7 +62,7 @@ export default function ViewDetails(props) {
       alert("Hashed keys field cannot be empty");
     } else {
       let longString = document.getElementById("hashedKeys").value;
-      let arrayString = longString.split(",").map((el) => "0x" + el);
+      let arrayString = longString.split(",");
       try {
         const transaction = await contract.pickHashedSample(arrayString);
         await transaction.wait();
