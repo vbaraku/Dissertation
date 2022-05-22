@@ -40,16 +40,16 @@ function EncryptionTools() {
       images.files.map(async (element) => {
         const key = new Uint8Array(16);
         window.crypto.getRandomValues(key);
-        const fileBytes = aesjs.utils.utf8.toBytes(await element.text())
-        const testHex = aesjs.utils.hex.fromBytes(fileBytes);
-        console.log("Unecrypted hex:");
-        console.log(testHex);
+        const buffer = new Uint8Array(await element.arrayBuffer())
+        // console.log(buffer)
+        // const fileBytes = aesjs.utils.arrayBuffer.toBytes(buffer);
         const ctr = new aesjs.ModeOfOperation.ctr(key);
-        const encryptedFile = ctr.encrypt(fileBytes);
-        var encryptedFileHex = aesjs.utils.hex.fromBytes(encryptedFile);
+        const encryptedFile = ctr.encrypt(buffer);
+        const encryptedFileHex = aesjs.utils.hex.fromBytes(encryptedFile);
+        //console.log(encryptedFileHex);
         var keyHex = aesjs.utils.hex.fromBytes(key);
         keysArray.push(keyHex);
-        encryptedFilesArray.push(encryptedFileHex)
+        encryptedFilesArray.push(encryptedFileHex);
       })
     );
     alert(
@@ -78,32 +78,45 @@ function EncryptionTools() {
       element.click();
       document.body.removeChild(element);
     });
+    window.location.reload();
   }
 
   async function decryptAES() {
     const key = await keys.files[0].text();
     let keyArray = key.split(",");
-    console.log("Key array")
+    console.log("Key array");
     console.log(keyArray);
     let decryptedFilesArray = new Array();
     await Promise.all(
       images.files.map(async (element, index) => {
-        
-        const fileBytes = aesjs.utils.hex.toBytes(await element.text());
-        console.log(fileBytes)
-        console.log("here1");
-        const ctr = new aesjs.ModeOfOperation.ctr(aesjs.utils.hex.toBytes(keyArray[index]));
-        console.log("here2");
+        const fileBytes = new aesjs.utils.hex.toBytes(await element.text());
+        const ctr = new aesjs.ModeOfOperation.ctr(
+          aesjs.utils.hex.toBytes(keyArray[index])
+        );
         const decryptedFile = ctr.decrypt(fileBytes);
-        console.log("here3");
-        const decryptedFileHex = aesjs.utils.hex.fromBytes(decryptedFile);
-        console.log("here4");
-        console.log("Decrypted Hex:");
-        console.log(decryptedFileHex);
-        decryptedFilesArray.push(decryptedFileHex);
+        console.log("DECRYPTED HEX");
+        console.log(aesjs.utils.hex.fromBytes(decryptedFile));
+        decryptedFilesArray.push(decryptedFile);
       })
     );
+    alert(
+      "Files decrypted and will be downloaded."
+    );
 
+    decryptedFilesArray.forEach((hex, index) => {
+      const blob = new Blob([hex], { type: 'image/png' });
+      if (window.navigator.msSaveOrOpenBlob) {
+        window.navigator.msSaveBlob(blob, index);
+      } else {
+        const elem = window.document.createElement("a");
+        elem.href = window.URL.createObjectURL(blob);
+        elem.download = index;
+        document.body.appendChild(elem);
+        elem.click();
+        document.body.removeChild(elem);
+      }
+    });
+    window.location.reload();
   }
 
   return (
@@ -136,7 +149,7 @@ function EncryptionTools() {
                 >
                   AES Encryption
                 </Typography>
-                
+
                 <Typography sx={{ mb: 1.5 }} color="text.secondary">
                   Upload images to encrypt:
                 </Typography>
