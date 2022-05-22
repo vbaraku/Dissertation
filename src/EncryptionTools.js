@@ -9,9 +9,11 @@ import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
 import { ethers } from "ethers";
 
+
 import DialogContentText from "@mui/material/DialogContentText";
 
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+
 
 function EncryptionTools() {
   var aesjs = require("aes-js");
@@ -110,7 +112,7 @@ function EncryptionTools() {
     });
     window.location.reload();
   }
-  
+
   //NOTE CHANGE HASH AT VIEWDETAILS (REMOX 0X)
   async function hash() {
     const key = await keys.files[0].text();
@@ -156,8 +158,8 @@ function EncryptionTools() {
               </Link>
             </Card>
           </Grid>
-          <Grid item xs={10}>
-            <Card sx={{ minWidth: 275 }}>
+          <Grid item xs={10} sx={{display: "flex"}}>
+            <Card sx={{ minWidth: 275 ,margin: 2, height: 250}}>
               <CardContent>
                 <Typography
                   sx={{ fontSize: 14 }}
@@ -188,7 +190,7 @@ function EncryptionTools() {
               </CardActions>
             </Card>
 
-            <Card sx={{ minWidth: 275 }}>
+            <Card sx={{ minWidth: 275 , margin: 2, height: 250}}>
               <CardContent>
                 <Typography
                   sx={{ fontSize: 14 }}
@@ -228,7 +230,7 @@ function EncryptionTools() {
                 </Button>
               </CardActions>
             </Card>
-            <Card sx={{ minWidth: 275 }}>
+            <Card sx={{ minWidth: 275 ,margin: 2, height: 250}}>
               <CardContent>
                 <Typography
                   sx={{ fontSize: 14 }}
