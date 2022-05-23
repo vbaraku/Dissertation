@@ -8,12 +8,12 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
 import { ethers } from "ethers";
-
+import Input from "@mui/material/Input";
 
 import DialogContentText from "@mui/material/DialogContentText";
 
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
-
+import EthCrypto from 'eth-crypto';
 
 function EncryptionTools() {
   var aesjs = require("aes-js");
@@ -136,12 +136,74 @@ function EncryptionTools() {
     document.body.appendChild(element);
     element.click();
     document.body.removeChild(element);
+    window.location.reload();
   }
+
+  async function encryptEcies() {
+    const key = await keys.files[0].text();
+    const pk = document.getElementById("publicKey").value;
+    let encryptedKeys = new Array();
+    let keyArray = key.split(",");
+
+    await Promise.all(
+      keyArray.map(async (el) => {
+        const encrypted = await EthCrypto.encryptWithPublicKey(pk,el);
+        const stringEncrypted = EthCrypto.cipher.stringify(encrypted);
+        encryptedKeys.push(stringEncrypted);
+      })
+    );
+    console.log(encryptedKeys);
+    alert(
+      "Keys encrypted with public key and will be downloaded"
+    );
+    var element = document.createElement("a");
+    element.setAttribute(
+      "href",
+      "data:text/plain;charset=utf-8," + encodeURIComponent(encryptedKeys)
+    );
+    element.setAttribute("download", "KeysPublicK");
+    element.style.display = "none";
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+    window.location.reload();
+  }
+
+  async function decryptEcies() {
+    const key = await keys.files[0].text();
+    const pk = document.getElementById("privateKey").value;
+    let decryptedKeys = new Array();
+    let keyArray = key.split(",");
+
+    await Promise.all(
+      keyArray.map(async (el) => {
+        const parsed = EthCrypto.cipher.parse(el)
+        const decrypted = await EthCrypto.decryptWithPrivateKey(pk,parsed);
+        decryptedKeys.push(decrypted);
+      })
+    );
+    console.log(decryptedKeys);
+    alert(
+      "Keys decrypted with private key and will be downloaded"
+    );
+    var element = document.createElement("a");
+    element.setAttribute(
+      "href",
+      "data:text/plain;charset=utf-8," + encodeURIComponent(decryptedKeys)
+    );
+    element.setAttribute("download", "Keys");
+    element.style.display = "none";
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+    window.location.reload();
+  }
+
 
   return (
     <div className="App">
       <div className="App-header">
-        <Grid spacing={2} style={{ height: "100vh", display: "flex" }}>
+        <Grid spacing={2} style={{ height: "100vh", display: "flex"}}>
           <Grid item xs={2}>
             <Card
               sx={{ height: "100%", backgroundColor: "#37367b", width: 200 }}
@@ -158,7 +220,7 @@ function EncryptionTools() {
               </Link>
             </Card>
           </Grid>
-          <Grid item xs={10} sx={{display: "flex"}}>
+          <Grid item xs={10} sx={{display: "flex", flexWrap:"wrap"}}>
             <Card sx={{ minWidth: 275 ,margin: 2, height: 250}}>
               <CardContent>
                 <Typography
@@ -230,6 +292,75 @@ function EncryptionTools() {
                 </Button>
               </CardActions>
             </Card>
+
+            <Card sx={{ minWidth: 275 , margin: 2, height: 250}}>
+              <CardContent>
+                <Typography
+                  sx={{ fontSize: 14 }}
+                  color="text.secondary"
+                  gutterBottom
+                >
+                  ECIES Encrypt
+                </Typography>
+                <Typography sx={{ mb: 1.5 }} color="text.secondary">
+                  Upload keys to encrypt:
+                </Typography>
+                <DialogContentText>
+                  <input
+                    type="file"
+                    multiple
+                    name="data"
+                    onChange={retrieveKeys}
+                  />
+                </DialogContentText>
+                <Typography sx={{ mb: 1.5 }} color="text.secondary">
+                  Provide the public key:
+                </Typography>
+                <DialogContentText>
+                  <Input id="publicKey"></Input>
+                </DialogContentText>
+              </CardContent>
+              <CardActions>
+                <Button size="small" onClick={encryptEcies}>
+                  Encrypt keys
+                </Button>
+              </CardActions>
+            </Card>
+
+            <Card sx={{ minWidth: 275 , margin: 2, height: 250}}>
+              <CardContent>
+                <Typography
+                  sx={{ fontSize: 14 }}
+                  color="text.secondary"
+                  gutterBottom
+                >
+                  ECIES Decrypt
+                </Typography>
+                <Typography sx={{ mb: 1.5 }} color="text.secondary">
+                  Upload keys to decrypt:
+                </Typography>
+                <DialogContentText>
+                  <input
+                    type="file"
+                    multiple
+                    name="data"
+                    onChange={retrieveKeys}
+                  />
+                </DialogContentText>
+                <Typography sx={{ mb: 1.5 }} color="text.secondary">
+                  Provide your private key:
+                </Typography>
+                <DialogContentText>
+                  <Input id="privateKey"></Input>
+                </DialogContentText>
+              </CardContent>
+              <CardActions>
+                <Button size="small" onClick={decryptEcies}>
+                  Decrypt keys
+                </Button>
+              </CardActions>
+            </Card>
+
             <Card sx={{ minWidth: 275 ,margin: 2, height: 250}}>
               <CardContent>
                 <Typography
