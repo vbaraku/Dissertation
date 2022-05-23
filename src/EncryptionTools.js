@@ -141,7 +141,7 @@ function EncryptionTools() {
 
   async function encryptEcies() {
     const key = await keys.files[0].text();
-    const pk = document.getElementById("publicKey").value;
+    const pk =  ethers.utils.arrayify(document.getElementById("publicKey").value);
     let encryptedKeys = new Array();
     let keyArray = key.split(",");
 
@@ -191,7 +191,7 @@ function EncryptionTools() {
       "href",
       "data:text/plain;charset=utf-8," + encodeURIComponent(decryptedKeys)
     );
-    element.setAttribute("download", "Keys");
+    element.setAttribute("download", "KeysPrivateKey");
     element.style.display = "none";
     document.body.appendChild(element);
     element.click();
