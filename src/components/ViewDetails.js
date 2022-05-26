@@ -84,7 +84,7 @@ export default function ViewDetails(props) {
       await transaction.wait();
       const transaction2 = await contract.returnRandomHashPicked();
       alert(
-        "The random hash that was picked and needs to be provided unhashed is hash nr " +
+        "The random hash that was picked and needs to be provided unhashed is hash with index " +
           transaction2[1] +
           " . " +
           transaction2[0]
