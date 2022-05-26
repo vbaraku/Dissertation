@@ -263,7 +263,7 @@ function EncryptionTools() {
               </Link>
             </Card>
           </Grid>
-          <Grid item xs={10} sx={{ display: "flex", flexWrap: "wrap" }}>
+          <Grid item xs={10} sx={{ display: "flex", flexWrap: "wrap", height: 250 }}>
             <Card sx={{ minWidth: 275, margin: 2, height: 250 }}>
               <CardContent>
                 <Typography

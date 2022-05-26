@@ -98,11 +98,13 @@ function Home() {
                     Encryption Tools
                   </Button>
                 </Link>
+                <AddProduct func={fetchData}></AddProduct>
+
               </Card>
             </Grid>
-            <Grid item xs={10} sx={{flexWrap: "wrap"}}>
+            <Grid item xs={10} sx={{display: "flex", flexWrap: "wrap", height: 250}}>
               {contractsData.map((el) => (
-                <Card sx={{ minWidth: 275, maxWidth: 350, margin: 2 }}>
+                <Card sx={{ minWidth: 275, maxWidth: 350, margin: 2}}>
                   <CardContent>
                     <Typography
                       sx={{ fontSize: 14 }}
@@ -168,7 +170,6 @@ function Home() {
                   </CardActions>
                 </Card>
               ))}
-              <AddProduct func={fetchData}></AddProduct>
             </Grid>
           </Grid>
         </div>

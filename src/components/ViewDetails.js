@@ -18,9 +18,27 @@ import { useState, useEffect } from "react";
 import { ethers } from "ethers";
 export default function ViewDetails(props) {
   const [open, setOpen] = React.useState(false);
-  const [fullWidth, setFullWidth] = React.useState(true);
-  const [maxWidth, setMaxWidth] = React.useState("sm");
-
+  const [keysHashed, setKeysHashed] = React.useState({
+    files: [],
+  });
+  // const [keysSample, setKeysSample] = React.useState({
+  //   files: [],
+  // });
+  const [keysFinal, setKeysFinal] = React.useState({
+    files: [],
+  });
+  const retrieveKeys1 = (e) => {
+    console.log(e.target.files);
+    setKeysHashed({ files: [...keysHashed.files, ...e.target.files] });
+  };
+  // const retrieveKeys2 = (e) => {
+  //   console.log(e.target.files);
+  //   setKeysSample({ files: [...keysSample.files, ...e.target.files] });
+  // };
+  const retrieveKeys3 = (e) => {
+    console.log(e.target.files);
+    setKeysFinal({ files: [...keysFinal.files, ...e.target.files] });
+  };
   const provider = new ethers.providers.Web3Provider(window.ethereum);
   const signer = provider.getSigner();
   const contract = new ethers.Contract(props.address, Purchase.abi, signer);
@@ -58,23 +76,22 @@ export default function ViewDetails(props) {
   }
 
   async function provideHashedKeys() {
-    if (document.getElementById("hashedKeys").value == "") {
-      alert("Hashed keys field cannot be empty");
-    } else {
-      let longString = document.getElementById("hashedKeys").value;
-      let arrayString = longString.split(",");
-      try {
-        const transaction = await contract.pickHashedSample(arrayString);
-        await transaction.wait();
-        const transaction2 = await contract.returnRandomHashPicked();
-        alert(
-          "The random hash that was picked and needs to be provided unhashed is hash nr " +
-            transaction2[1] + ". " + transaction2[0]
-        );
-      } catch (error) {
-        alert("Only the owner can provide keys");
-        console.log(error);
-      }
+    let longString = await keysHashed.files[0].text();
+    console.log(longString);
+    let arrayString = longString.split(",");
+    try {
+      const transaction = await contract.pickHashedSample(arrayString);
+      await transaction.wait();
+      const transaction2 = await contract.returnRandomHashPicked();
+      alert(
+        "The random hash that was picked and needs to be provided unhashed is hash nr " +
+          transaction2[1] +
+          " . " +
+          transaction2[0]
+      );
+    } catch (error) {
+      alert("Only the owner can provide keys");
+      console.log(error);
     }
   }
 
@@ -86,9 +103,7 @@ export default function ViewDetails(props) {
       try {
         const transaction = await contract.putUnhashedSample(unHashedKey);
         await transaction.wait();
-        alert(
-          "The unhashed key was delivered"
-        );
+        alert("The unhashed key was delivered");
       } catch (error) {
         alert("Only the owner can provide keys");
         console.log(error);
@@ -97,65 +112,86 @@ export default function ViewDetails(props) {
   }
 
   async function viewSampleKey() {
-      try {
-        const transaction = await contract.returnUnHashedSample();
-        console.log(transaction);
-        alert(
-          "The unhashed key is: " + transaction[0] + " with CID: " + props.cids[transaction[1]]
-        );
-      } catch (error) {
-        alert("Something went wrong");
-        console.log(error);
-      }
+    try {
+      const transaction = await contract.returnUnHashedSample();
+      console.log(transaction);
+      alert(
+        "The unhashed key will be downloaded. The CID to the sample file is: " +
+          props.cids[transaction[1]]
+      );
+      var element = document.createElement("a");
+      element.setAttribute(
+        "href",
+        "data:text/plain;charset=utf-8," + encodeURIComponent(transaction[0])
+      );
+      element.setAttribute("download", "KeySample");
+      element.style.display = "none";
+      document.body.appendChild(element);
+      element.click();
+      document.body.removeChild(element);
+      
+    } catch (error) {
+      alert("Something went wrong");
+      console.log(error);
     }
-  
-    async function purchaseRequest() {
-      try {
-        const transaction = await contract.purchaseProducts({
-          value: ethers.utils.parseEther(props.price),
-        });
-        alert(
-          "The ether has been deposited. Owner has 24h to provide the rest of the keys." 
-        );
-      } catch (error) {
-        alert("Owner cannot buy");
-        console.log(error);
-      }
-    }
+  }
 
-    async function withdrawFunds() {
-      try {
-        let productKeys = document.getElementById("withdraw").value.split(",");
-        const transaction = await contract.withdraw(productKeys);
-        
-      } catch (error) {
-        alert("Keys do not match the originally uploaded ones");
-        console.log(error);
-      }
+  async function purchaseRequest() {
+    try {
+      const transaction = await contract.purchaseProducts({
+        value: ethers.utils.parseEther(props.price),
+      });
+      alert(
+        "The ether has been deposited. Owner has 24h to provide the rest of the keys."
+      );
+    } catch (error) {
+      alert("Owner cannot buy");
+      console.log(error);
     }
+  }
 
-    async function cancelPurchase(){
-      try {
-        const transaction = await contract.returnDeposit();
-        
-      } catch (error) {
-        alert("24h have not passed yet");
-        console.log(error);
-      }
+  async function withdrawFunds() {
+    try {
+      let longString = await keysFinal.files[0].text();
+      let productKeys = longString.split(",");
+      const transaction = await contract.withdraw(productKeys);
+    } catch (error) {
+      alert("Keys do not match the originally uploaded ones");
+      console.log(error);
     }
+  }
 
-    async function getKeys(){
-      try {
-        const transaction = await contract.getProduct();
-        const finish = await contract.finish();
-        console.log(transaction)
-        alert("Keys are: " + transaction + ". Cids" + props.cids)
-        
-      } catch (error) {
-        alert("Only the buyer can get the keys");
-        console.log(error);
-      }
+  async function cancelPurchase() {
+    try {
+      const transaction = await contract.returnDeposit();
+    } catch (error) {
+      alert("24h have not passed yet");
+      console.log(error);
     }
+  }
+
+  async function getKeys() {
+    try {
+      const transaction = await contract.getProduct();
+      const finish = await contract.finish();
+      alert("Keys will be downloaded. Cids of the files are: " + props.cids);
+      var element = document.createElement("a");
+      element.setAttribute(
+        "href",
+        "data:text/plain;charset=utf-8," + encodeURIComponent(transaction)
+      );
+      element.setAttribute("download", "SetOfKeys");
+      element.style.display = "none";
+      document.body.appendChild(element);
+      element.click();
+      document.body.removeChild(element);
+      
+      
+    } catch (error) {
+      alert("Only the buyer can get the keys");
+      console.log(error);
+    }
+  }
 
   return (
     <React.Fragment>
@@ -193,30 +229,71 @@ export default function ViewDetails(props) {
           >
             Provide hashed keys
           </Button>
-          <Input id="hashedKeys"></Input>
+          <Input
+            id="hashedKeys"
+            type="file"
+            multiple
+            name="data"
+            onChange={retrieveKeys1}
+          ></Input>
           <br></br>
-          <Button sx={{ margin: "5px" }} variant="outlined" onClick={provideUnHashedKeys}>
+          <Button
+            sx={{ margin: "5px" }}
+            variant="outlined"
+            onClick={provideUnHashedKeys}
+          >
             Provide non-hashed key
           </Button>
+
           <Input id="unHashedKeys"></Input>
           <br></br>
-          <Button sx={{ margin: "5px" }} variant="outlined" onClick={viewSampleKey}>
+          <Button
+            sx={{ margin: "5px" }}
+            variant="outlined"
+            onClick={viewSampleKey}
+          >
             View sample key
           </Button>
           <br></br>
-          <Button sx={{ margin: "5px" }} variant="contained" color="success" onClick={purchaseRequest}>
+          <Button
+            sx={{ margin: "5px" }}
+            variant="contained"
+            color="success"
+            onClick={purchaseRequest}
+          >
             Purchase request
           </Button>
-          <Button sx={{ margin: "5px" }} variant="contained" color="error" onClick={cancelPurchase}>
+          <Button
+            sx={{ margin: "5px" }}
+            variant="contained"
+            color="error"
+            onClick={cancelPurchase}
+          >
             Cancel purchase
           </Button>
           <br></br>
-          <Button sx={{ margin: "5px" }} variant="contained" color="success" onClick={withdrawFunds}>
+          <Button
+            sx={{ margin: "5px" }}
+            variant="contained"
+            color="success"
+            onClick={withdrawFunds}
+          >
             Withdraw funds
           </Button>
-          <Input id="withdraw"></Input>
+          <Input
+            type="file"
+            multiple
+            name="data"
+            onChange={retrieveKeys3}
+            id="withdraw"
+          ></Input>
           <br></br>
-          <Button sx={{ margin: "5px" }} variant="contained" color="success" onClick={getKeys}>
+          <Button
+            sx={{ margin: "5px" }}
+            variant="contained"
+            color="success"
+            onClick={getKeys}
+          >
             Get product keys
           </Button>
           <Box
