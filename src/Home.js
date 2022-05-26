@@ -76,70 +76,6 @@ function Home() {
     fetchData();
   }, []);
 
-  async function setPriceOnContract(address) {
-    if (!contracts) return;
-    if (typeof window.ethereum !== "undefined") {
-      await requestAccount();
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const signer = provider.getSigner();
-      const contract = new ethers.Contract(address, Purchase.abi, signer);
-      try {
-        const transaction = await contract.setPrice(
-          ethers.utils.parseEther(priceToChange)
-        );
-        await transaction.wait();
-      } catch (error) {
-        alert("Only the owner can change the price");
-        console.log(error);
-      }
-    }
-    window.location.reload(); // NEEDS TO BE CHANGED LATER TO UPDATE WITHOUT RELOADING
-  }
-
-  async function purchaseProduct(address, price) {
-    if (typeof window.ethereum !== "undefined") {
-      await requestAccount();
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const signer = provider.getSigner();
-      const contract = new ethers.Contract(address, Purchase.abi, signer);
-      try {
-        const transaction = await contract.buy({
-          value: ethers.utils.parseEther(price),
-        });
-        await transaction.wait();
-      } catch (error) {
-        alert("You are the owner you cannot buy your product");
-        console.log(error);
-      }
-    }
-  }
-
-  async function requestSample(address) {
-    await requestAccount();
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = provider.getSigner();
-    const ethAddress = await signer.getAddress();
-    const hash = await ethers.utils.keccak256(ethAddress);
-    const sig = await signer.signMessage(ethers.utils.arrayify(hash));
-    const pk = ethers.utils.recoverPublicKey(
-      ethers.utils.arrayify(
-        ethers.utils.hashMessage(ethers.utils.arrayify(hash))
-      ),
-      sig
-    );
-    const contract = new ethers.Contract(address, Purchase.abi, signer);
-    try {
-      const transaction = await contract.requestSample(pk);
-      await transaction.wait();
-      // const transaction2 = await contract.getInterestedBuyers();
-      // console.log(transaction2)
-    } catch (error) {
-      alert("Something went wrong");
-      console.log(error);
-    }
-    console.log(pk);
-  }
-  console.log(contractsData);
 
   if (false) {
     return "Loading";
@@ -150,21 +86,21 @@ function Home() {
           <Grid spacing={2} style={{ height: "100vh", display: "flex" }}>
             <Grid item xs={2}>
               <Card
-                sx={{ height: "100%", backgroundColor: "#37367b", width: 200 }}
+                sx={{ height: "100%", backgroundColor: "#454a75", width: 200 }}
               >
                 <Link to="/">
-                  <Button variant="contained" color="primary">
+                  <Button variant="contained" sx={{backgroundColor : "#b8fbf6", color: "black", width: "200px"}}>
                     Home
                   </Button>
                 </Link>
                 <Link to="/tools">
-                  <Button variant="contained" color="primary">
+                  <Button variant="contained" sx={{backgroundColor : "#b8fbf6", color: "black", width: "200px"}}>
                     Encryption Tools
                   </Button>
                 </Link>
               </Card>
             </Grid>
-            <Grid item xs={10}>
+            <Grid item xs={10} sx={{flexWrap: "wrap"}}>
               {contractsData.map((el) => (
                 <Card sx={{ minWidth: 275, maxWidth: 350, margin: 2 }}>
                   <CardContent>
@@ -172,19 +108,20 @@ function Home() {
                       sx={{ fontSize: 14 }}
                       color="text.secondary"
                       gutterBottom
+                      noWrap={true}
                     >
-                      Owner: {el.owner}
-                    </Typography>
-                    <Typography variant="h5" component="div">
-                      Title:
+                      Owner: <br></br> {el.owner}
                     </Typography>
                     <Typography
                       noWrap={true}
-                      sx={{ mb: 1.5 }}
                       color="text.secondary"
                     >
-                      {el.title}
+                     Title:
                     </Typography>
+                    <Typography variant="h5" component="div" sx={{mb: 1}}>
+                    {el.title}
+                    </Typography>
+                    
                     <Typography variant="body2">
                       The price of this product is:
                       <br />

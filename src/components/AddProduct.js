@@ -101,7 +101,7 @@ export default function AddProduct(props) {
 
   return (
     <div>
-      <Button variant="outlined" onClick={handleClickOpen}>
+      <Button variant="outlined" onClick={handleClickOpen} sx={{}}>
         New product
       </Button>
       <Dialog

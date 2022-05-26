@@ -9,11 +9,12 @@ import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
 import { ethers } from "ethers";
 import Input from "@mui/material/Input";
+import * as IPFS from "ipfs-core";
 
 import DialogContentText from "@mui/material/DialogContentText";
 
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
-import EthCrypto from 'eth-crypto';
+import EthCrypto from "eth-crypto";
 
 function EncryptionTools() {
   var aesjs = require("aes-js");
@@ -39,8 +40,25 @@ function EncryptionTools() {
   async function encryptAES() {
     let keysArray = new Array();
     let encryptedFilesArray = new Array();
+    let fileNames = new Array();
     await Promise.all(
+      // async () => {
+      //   for (let file of images.files) {
+      //     fileNames.push(file.name);
+      //     const key = new Uint8Array(16);
+      //     window.crypto.getRandomValues(key);
+      //     const buffer = new Uint8Array(await element.arrayBuffer());
+      //     const ctr = new aesjs.ModeOfOperation.ctr(key);
+      //     const encryptedFile = ctr.encrypt(buffer);
+      //     const encryptedFileHex = aesjs.utils.hex.fromBytes(encryptedFile);
+      //     var keyHex = aesjs.utils.hex.fromBytes(key);
+      //     keysArray.push(keyHex);
+      //     encryptedFilesArray.push(encryptedFileHex);
+      //   }
+      // }
       images.files.map(async (element) => {
+        console.log(element.name);
+        fileNames.push(element.name);
         const key = new Uint8Array(16);
         window.crypto.getRandomValues(key);
         const buffer = new Uint8Array(await element.arrayBuffer());
@@ -67,12 +85,14 @@ function EncryptionTools() {
     document.body.removeChild(element);
 
     encryptedFilesArray.forEach((hex, index) => {
+      console.log("indexi");
+      console.log(fileNames[index]);
       var element = document.createElement("a");
       element.setAttribute(
         "href",
         "data:text/plain;charset=utf-8," + encodeURIComponent(hex)
       );
-      element.setAttribute("download", index);
+      element.setAttribute("download", fileNames[index]);
       element.style.display = "none";
       document.body.appendChild(element);
       element.click();
@@ -82,11 +102,24 @@ function EncryptionTools() {
   }
 
   async function decryptAES() {
+    let fileNames = new Array();
     const key = await keys.files[0].text();
     let keyArray = key.split(",");
     let decryptedFilesArray = new Array();
     await Promise.all(
+    //   async () => {
+        // for (let [index, file] of images.files.entries()) {
+        //   fileNames.push(file.name);
+        //   const fileBytes = new aesjs.utils.hex.toBytes(await file.text());
+        //   const ctr = new aesjs.ModeOfOperation.ctr(
+        //     aesjs.utils.hex.toBytes(keyArray[index])
+        //   );
+        //   const decryptedFile = ctr.decrypt(fileBytes);
+        //   decryptedFilesArray.push(decryptedFile);
+        // }
+      //}
       images.files.map(async (element, index) => {
+        fileNames.push(element.name);
         const fileBytes = new aesjs.utils.hex.toBytes(await element.text());
         const ctr = new aesjs.ModeOfOperation.ctr(
           aesjs.utils.hex.toBytes(keyArray[index])
@@ -98,13 +131,14 @@ function EncryptionTools() {
     alert("Files decrypted and will be downloaded.");
 
     decryptedFilesArray.forEach((hex, index) => {
+      console.log(fileNames[index]);
       const blob = new Blob([hex], { type: "image/png" });
       if (window.navigator.msSaveOrOpenBlob) {
-        window.navigator.msSaveBlob(blob, index);
+        window.navigator.msSaveBlob(blob, fileNames[index]);
       } else {
         const elem = window.document.createElement("a");
         elem.href = window.URL.createObjectURL(blob);
-        elem.download = index;
+        elem.download = fileNames[index];
         document.body.appendChild(elem);
         elem.click();
         document.body.removeChild(elem);
@@ -123,9 +157,7 @@ function EncryptionTools() {
       hashedKeys.push(hashKey);
     });
     console.log(hashedKeys);
-    alert(
-      "Keys hashed and will be downloaded"
-    );
+    alert("Keys hashed and will be downloaded");
     var element = document.createElement("a");
     element.setAttribute(
       "href",
@@ -141,21 +173,21 @@ function EncryptionTools() {
 
   async function encryptEcies() {
     const key = await keys.files[0].text();
-    const pk =  ethers.utils.arrayify(document.getElementById("publicKey").value);
+    const pk = ethers.utils.arrayify(
+      document.getElementById("publicKey").value
+    );
     let encryptedKeys = new Array();
     let keyArray = key.split(",");
 
     await Promise.all(
       keyArray.map(async (el) => {
-        const encrypted = await EthCrypto.encryptWithPublicKey(pk,el);
+        const encrypted = await EthCrypto.encryptWithPublicKey(pk, el);
         const stringEncrypted = EthCrypto.cipher.stringify(encrypted);
         encryptedKeys.push(stringEncrypted);
       })
     );
     console.log(encryptedKeys);
-    alert(
-      "Keys encrypted with public key and will be downloaded"
-    );
+    alert("Keys encrypted with public key and will be downloaded");
     var element = document.createElement("a");
     element.setAttribute(
       "href",
@@ -177,15 +209,13 @@ function EncryptionTools() {
 
     await Promise.all(
       keyArray.map(async (el) => {
-        const parsed = EthCrypto.cipher.parse(el)
-        const decrypted = await EthCrypto.decryptWithPrivateKey(pk,parsed);
+        const parsed = EthCrypto.cipher.parse(el);
+        const decrypted = await EthCrypto.decryptWithPrivateKey(pk, parsed);
         decryptedKeys.push(decrypted);
       })
     );
     console.log(decryptedKeys);
-    alert(
-      "Keys decrypted with private key and will be downloaded"
-    );
+    alert("Keys decrypted with private key and will be downloaded");
     var element = document.createElement("a");
     element.setAttribute(
       "href",
@@ -199,29 +229,71 @@ function EncryptionTools() {
     window.location.reload();
   }
 
+  async function getFilesFromIpfs() {
+    let cids = document.getElementById("cids").value;
+    let cidArray = cids.split(",");
+    const ipfs = await IPFS.create();
+
+    await Promise.all(
+      cidArray.map(async (el) => {
+        const stream = ipfs.cat(el);
+        let data = "";
+        for await (const chunk of stream) {
+          // chunks of data are returned as a Buffer, convert it back to a string
+          data += Buffer.from(chunk).toString("utf-8");
+        }
+        var element = document.createElement("a");
+        element.setAttribute(
+          "href",
+          "data:text/plain;charset=utf-8," + encodeURIComponent(data)
+        );
+        element.setAttribute("download", "ipfsFile");
+        element.style.display = "none";
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
+      })
+    );
+    alert("Data fetched from IPFS and was downloaded");
+    window.location.reload();
+  }
 
   return (
     <div className="App">
       <div className="App-header">
-        <Grid spacing={2} style={{ height: "100vh", display: "flex"}}>
+        <Grid spacing={2} style={{ height: "100vh", display: "flex" }}>
           <Grid item xs={2}>
             <Card
-              sx={{ height: "100%", backgroundColor: "#37367b", width: 200 }}
+              sx={{ height: "100%", backgroundColor: "#454a75", width: 200 }}
             >
               <Link to="/">
-                <Button variant="contained" color="primary">
+                <Button
+                  variant="contained"
+                  sx={{
+                    backgroundColor: "#b8fbf6",
+                    color: "black",
+                    width: "200px",
+                  }}
+                >
                   Home
                 </Button>
               </Link>
               <Link to="/tools">
-                <Button variant="contained" color="primary">
+                <Button
+                  variant="contained"
+                  sx={{
+                    backgroundColor: "#b8fbf6",
+                    color: "black",
+                    width: "200px",
+                  }}
+                >
                   Encryption Tools
                 </Button>
               </Link>
             </Card>
           </Grid>
-          <Grid item xs={10} sx={{display: "flex", flexWrap:"wrap"}}>
-            <Card sx={{ minWidth: 275 ,margin: 2, height: 250}}>
+          <Grid item xs={10} sx={{ display: "flex", flexWrap: "wrap" }}>
+            <Card sx={{ minWidth: 275, margin: 2, height: 250 }}>
               <CardContent>
                 <Typography
                   sx={{ fontSize: 14 }}
@@ -252,7 +324,7 @@ function EncryptionTools() {
               </CardActions>
             </Card>
 
-            <Card sx={{ minWidth: 275 , margin: 2, height: 250}}>
+            <Card sx={{ minWidth: 275, margin: 2, height: 250 }}>
               <CardContent>
                 <Typography
                   sx={{ fontSize: 14 }}
@@ -293,7 +365,7 @@ function EncryptionTools() {
               </CardActions>
             </Card>
 
-            <Card sx={{ minWidth: 275 , margin: 2, height: 250}}>
+            <Card sx={{ minWidth: 275, margin: 2, height: 250 }}>
               <CardContent>
                 <Typography
                   sx={{ fontSize: 14 }}
@@ -327,7 +399,7 @@ function EncryptionTools() {
               </CardActions>
             </Card>
 
-            <Card sx={{ minWidth: 275 , margin: 2, height: 250}}>
+            <Card sx={{ minWidth: 275, margin: 2, height: 250 }}>
               <CardContent>
                 <Typography
                   sx={{ fontSize: 14 }}
@@ -361,7 +433,7 @@ function EncryptionTools() {
               </CardActions>
             </Card>
 
-            <Card sx={{ minWidth: 275 ,margin: 2, height: 250}}>
+            <Card sx={{ minWidth: 275, margin: 2, height: 250 }}>
               <CardContent>
                 <Typography
                   sx={{ fontSize: 14 }}
@@ -385,6 +457,29 @@ function EncryptionTools() {
               <CardActions>
                 <Button size="small" onClick={hash}>
                   Hash keys
+                </Button>
+              </CardActions>
+            </Card>
+
+            <Card sx={{ minWidth: 275, margin: 2, height: 250 }}>
+              <CardContent>
+                <Typography
+                  sx={{ fontSize: 14 }}
+                  color="text.secondary"
+                  gutterBottom
+                >
+                  Get Files from IPFS
+                </Typography>
+                <Typography sx={{ mb: 1.5 }} color="text.secondary">
+                  Provide the file CIDs:
+                </Typography>
+                <DialogContentText>
+                  <Input id="cids"></Input>
+                </DialogContentText>
+              </CardContent>
+              <CardActions>
+                <Button size="small" onClick={getFilesFromIpfs}>
+                  Fetch files
                 </Button>
               </CardActions>
             </Card>
