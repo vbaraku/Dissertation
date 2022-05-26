@@ -12,17 +12,21 @@ import Typography from "@mui/material/Typography";
 import AddProduct from "./components/AddProduct";
 import ViewDetails from "./components/ViewDetails";
 import Grid from "@mui/material/Grid";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Paper from "@mui/material/Paper";
 
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 
 const factoryAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
-function Home() {
+function History() {
   const [contracts, setContracts] = useState([]);
   const [contractsData, setContractsData] = useState([]);
 
-  async function requestAccount() {
-    await window.ethereum.request({ method: "eth_requestAccounts" });
-  }
   const fetchData = async function fetchContractDetails() {
     if (typeof window.ethereum !== "undefined") {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -58,11 +62,10 @@ function Home() {
 
           Promise.all(promises).then((results) => {
             let notFinished = results.filter((el) => {
-              if (!el.isFinished) {
+              if (el.isFinished) {
                 return el;
               }
             });
-
             setContractsData(notFinished);
           });
         }
@@ -120,55 +123,48 @@ function Home() {
                   History
                 </Button>
               </Link>
-              <AddProduct func={fetchData}></AddProduct>
             </Card>
           </Grid>
-          <Grid
-            item
-            xs={10}
-            sx={{ display: "flex", flexWrap: "wrap", height: 250 }}
-          >
-            {contractsData.map((el) => (
-              <Card sx={{ minWidth: 275, maxWidth: 350, margin: 2 }}>
-                <CardContent>
-                  <Typography
-                    sx={{ fontSize: 14 }}
-                    color="text.secondary"
-                    gutterBottom
-                    noWrap={true}
-                  >
-                    Owner: <br></br> {el.owner}
-                  </Typography>
-                  <Typography noWrap={true} color="text.secondary">
-                    Title:
-                  </Typography>
-                  <Typography variant="h5" component="div" sx={{ mb: 1 }}>
-                    {el.title}
-                  </Typography>
-
-                  <Typography variant="body2">
-                    The price of this product is:
-                    <br />
-                    {el.price} eth
-                  </Typography>
-                </CardContent>
-                <CardActions>
-                  <ViewDetails
-                    title={el.title}
-                    address={el.address}
-                    cids={el.cids}
-                    owner={el.owner}
-                    price={el.price}
-                    interestedBuyers={el.interestedBuyers}
-                    func={fetchData}
-                  ></ViewDetails>
-                </CardActions>
-              </Card>
-            ))}
+          <Grid item xs={10}>
+            <div style={{ marginLeft: "auto" }}>
+              <TableContainer component={Paper}>
+                <Table
+                  sx={{ minWidth: 650, marginLeft: "auto" }}
+                  size="small"
+                  aria-label="simple table"
+                >
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Contract Title</TableCell>
+                      <TableCell align="left">Seller</TableCell>
+                      <TableCell align="left">Buyer</TableCell>
+                      <TableCell align="left">Purchase price</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {contractsData.map((row) => (
+                      <TableRow
+                        key={row.name}
+                        sx={{
+                          "&:last-child td, &:last-child th": { border: 0 },
+                        }}
+                      >
+                        <TableCell component="th" scope="row">
+                          {row.title}
+                        </TableCell>
+                        <TableCell align="left">{row.owner}</TableCell>
+                        <TableCell align="left">{row.buyer}</TableCell>
+                        <TableCell align="left">{row.price} ETH</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </div>
           </Grid>
         </Grid>
       </div>
     </div>
   );
 }
-export default Home;
+export default History;

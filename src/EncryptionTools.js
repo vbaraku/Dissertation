@@ -261,9 +261,25 @@ function EncryptionTools() {
                   Encryption Tools
                 </Button>
               </Link>
+              <Link to="/history">
+                <Button
+                  variant="contained"
+                  sx={{
+                    backgroundColor: "#b8fbf6",
+                    color: "black",
+                    width: "200px",
+                  }}
+                >
+                  History
+                </Button>
+              </Link>
             </Card>
           </Grid>
-          <Grid item xs={10} sx={{ display: "flex", flexWrap: "wrap", height: 250 }}>
+          <Grid
+            item
+            xs={10}
+            sx={{ display: "flex", flexWrap: "wrap", height: 250 }}
+          >
             <Card sx={{ minWidth: 275, margin: 2, height: 250 }}>
               <CardContent>
                 <Typography

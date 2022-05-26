@@ -98,7 +98,7 @@ export default function AddProduct(props) {
 
   return (
     <div>
-      <Button variant="contained" sx={{backgroundColor : "#b8fbf6", color: "Green", width: "200px", marginTop: "370%"}} onClick={handleClickOpen}>
+      <Button variant="contained" sx={{backgroundColor : "#b8fbf6", color: "Green", width: "200px", marginTop: "350%"}} onClick={handleClickOpen}>
         New product
       </Button>
       <Dialog

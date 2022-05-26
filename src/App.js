@@ -7,6 +7,7 @@ import {
 } from "react-router-dom";
 import Home from './Home';
 import EncryptionTools from "./EncryptionTools";
+import History from "./History";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Routes>
           <Route exact path="/" element={<Home/>}/>
           <Route exact path="/tools" element={<EncryptionTools/>}/>
+          <Route exact path="/history" element={<History/>}/>
         </Routes>
     </Router>
   );

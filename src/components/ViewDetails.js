@@ -185,7 +185,7 @@ export default function ViewDetails(props) {
       document.body.appendChild(element);
       element.click();
       document.body.removeChild(element);
-      
+      window.location.reload();
       
     } catch (error) {
       alert("Only the buyer can get the keys");

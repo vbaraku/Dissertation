@@ -59,6 +59,10 @@ contract Purchase {
         return beneficiary;
     }
 
+    function getFinish() public view returns (bool finis) {
+        return isFinished;
+    }
+
     function buy() public payable SellerCantBuy {
         require(requestedAmount == msg.value, "invalid amount");
         beneficiary.transfer(msg.value);
@@ -149,6 +153,9 @@ contract Purchase {
         return unHashedKeys;
     }
 
+    function getBuyerAddress() public view returns(address buyer){
+        return buyerDeposit;
+    }
     function finish() public {
         require(msg.sender == buyerDeposit, "you cannot call this function");
         isFinished = true;
