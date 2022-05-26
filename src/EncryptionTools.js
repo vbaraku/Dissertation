@@ -38,27 +38,9 @@ function EncryptionTools() {
   };
 
   async function encryptAES() {
-    let keysArray = new Array();
-    let encryptedFilesArray = new Array();
     let fileNames = new Array();
-    await Promise.all(
-      // async () => {
-      //   for (let file of images.files) {
-      //     fileNames.push(file.name);
-      //     const key = new Uint8Array(16);
-      //     window.crypto.getRandomValues(key);
-      //     const buffer = new Uint8Array(await element.arrayBuffer());
-      //     const ctr = new aesjs.ModeOfOperation.ctr(key);
-      //     const encryptedFile = ctr.encrypt(buffer);
-      //     const encryptedFileHex = aesjs.utils.hex.fromBytes(encryptedFile);
-      //     var keyHex = aesjs.utils.hex.fromBytes(key);
-      //     keysArray.push(keyHex);
-      //     encryptedFilesArray.push(encryptedFileHex);
-      //   }
-      // }
+    let encryptedFilesArray = await Promise.all(
       images.files.map(async (element) => {
-        console.log(element.name);
-        fileNames.push(element.name);
         const key = new Uint8Array(16);
         window.crypto.getRandomValues(key);
         const buffer = new Uint8Array(await element.arrayBuffer());
@@ -66,10 +48,15 @@ function EncryptionTools() {
         const encryptedFile = ctr.encrypt(buffer);
         const encryptedFileHex = aesjs.utils.hex.fromBytes(encryptedFile);
         var keyHex = aesjs.utils.hex.fromBytes(key);
-        keysArray.push(keyHex);
-        encryptedFilesArray.push(encryptedFileHex);
+        const file = {
+          name: element.name,
+          hex: encryptedFileHex,
+          key: keyHex,
+        };
+        return file;
       })
     );
+    let keysArray = encryptedFilesArray.map((ele) => ele.key);
     alert(
       "Files encrypted and will be downloaded. Keys file holds the keys, and each file keeps the index originally uploaded."
     );
@@ -84,15 +71,13 @@ function EncryptionTools() {
     element.click();
     document.body.removeChild(element);
 
-    encryptedFilesArray.forEach((hex, index) => {
-      console.log("indexi");
-      console.log(fileNames[index]);
+    encryptedFilesArray.forEach((file) => {
       var element = document.createElement("a");
       element.setAttribute(
         "href",
-        "data:text/plain;charset=utf-8," + encodeURIComponent(hex)
+        "data:text/plain;charset=utf-8," + encodeURIComponent(file.hex)
       );
-      element.setAttribute("download", fileNames[index]);
+      element.setAttribute("download", file.name);
       element.style.display = "none";
       document.body.appendChild(element);
       element.click();
@@ -105,40 +90,30 @@ function EncryptionTools() {
     let fileNames = new Array();
     const key = await keys.files[0].text();
     let keyArray = key.split(",");
-    let decryptedFilesArray = new Array();
-    await Promise.all(
-    //   async () => {
-        // for (let [index, file] of images.files.entries()) {
-        //   fileNames.push(file.name);
-        //   const fileBytes = new aesjs.utils.hex.toBytes(await file.text());
-        //   const ctr = new aesjs.ModeOfOperation.ctr(
-        //     aesjs.utils.hex.toBytes(keyArray[index])
-        //   );
-        //   const decryptedFile = ctr.decrypt(fileBytes);
-        //   decryptedFilesArray.push(decryptedFile);
-        // }
-      //}
+    let decryptedFilesArray = await Promise.all(
       images.files.map(async (element, index) => {
-        fileNames.push(element.name);
         const fileBytes = new aesjs.utils.hex.toBytes(await element.text());
         const ctr = new aesjs.ModeOfOperation.ctr(
           aesjs.utils.hex.toBytes(keyArray[index])
         );
         const decryptedFile = ctr.decrypt(fileBytes);
-        decryptedFilesArray.push(decryptedFile);
+        const file = {
+          name: element.name,
+          decrypt: decryptedFile,
+        };
+        return file;
       })
     );
     alert("Files decrypted and will be downloaded.");
 
-    decryptedFilesArray.forEach((hex, index) => {
-      console.log(fileNames[index]);
-      const blob = new Blob([hex], { type: "image/png" });
+    decryptedFilesArray.forEach((file) => {
+      const blob = new Blob([file.decrypt], { type: "image/png" });
       if (window.navigator.msSaveOrOpenBlob) {
-        window.navigator.msSaveBlob(blob, fileNames[index]);
+        window.navigator.msSaveBlob(blob, file.name);
       } else {
         const elem = window.document.createElement("a");
         elem.href = window.URL.createObjectURL(blob);
-        elem.download = fileNames[index];
+        elem.download = file.name;
         document.body.appendChild(elem);
         elem.click();
         document.body.removeChild(elem);
@@ -156,7 +131,6 @@ function EncryptionTools() {
       const hashKey = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(el));
       hashedKeys.push(hashKey);
     });
-    console.log(hashedKeys);
     alert("Keys hashed and will be downloaded");
     var element = document.createElement("a");
     element.setAttribute(
@@ -176,17 +150,14 @@ function EncryptionTools() {
     const pk = ethers.utils.arrayify(
       document.getElementById("publicKey").value
     );
-    let encryptedKeys = new Array();
     let keyArray = key.split(",");
-
-    await Promise.all(
+    let encryptedKeys = await Promise.all(
       keyArray.map(async (el) => {
         const encrypted = await EthCrypto.encryptWithPublicKey(pk, el);
         const stringEncrypted = EthCrypto.cipher.stringify(encrypted);
-        encryptedKeys.push(stringEncrypted);
+        return stringEncrypted;
       })
     );
-    console.log(encryptedKeys);
     alert("Keys encrypted with public key and will be downloaded");
     var element = document.createElement("a");
     element.setAttribute(
@@ -204,17 +175,15 @@ function EncryptionTools() {
   async function decryptEcies() {
     const key = await keys.files[0].text();
     const pk = document.getElementById("privateKey").value;
-    let decryptedKeys = new Array();
     let keyArray = key.split(",");
 
-    await Promise.all(
+    let decryptedKeys = await Promise.all(
       keyArray.map(async (el) => {
         const parsed = EthCrypto.cipher.parse(el);
         const decrypted = await EthCrypto.decryptWithPrivateKey(pk, parsed);
-        decryptedKeys.push(decrypted);
+        return decrypted;
       })
     );
-    console.log(decryptedKeys);
     alert("Keys decrypted with private key and will be downloaded");
     var element = document.createElement("a");
     element.setAttribute(
@@ -233,8 +202,7 @@ function EncryptionTools() {
     let cids = document.getElementById("cids").value;
     let cidArray = cids.split(",");
     const ipfs = await IPFS.create();
-
-    await Promise.all(
+    let ipfsData = await Promise.all(
       cidArray.map(async (el) => {
         const stream = ipfs.cat(el);
         let data = "";
@@ -242,20 +210,23 @@ function EncryptionTools() {
           // chunks of data are returned as a Buffer, convert it back to a string
           data += Buffer.from(chunk).toString("utf-8");
         }
-        var element = document.createElement("a");
-        element.setAttribute(
-          "href",
-          "data:text/plain;charset=utf-8," + encodeURIComponent(data)
-        );
-        element.setAttribute("download", "ipfsFile");
-        element.style.display = "none";
-        document.body.appendChild(element);
-        element.click();
-        document.body.removeChild(element);
+        return data;
       })
     );
-    alert("Data fetched from IPFS and was downloaded");
-    window.location.reload();
+    alert("Data fetched from IPFS and will be downloaded");
+    ipfsData.forEach((data) => {
+      var element = document.createElement("a");
+      element.setAttribute(
+        "href",
+        "data:text/plain;charset=utf-8," + encodeURIComponent(data)
+      );
+      element.setAttribute("download", "ipfsFile");
+      element.style.display = "none";
+      document.body.appendChild(element);
+      element.click();
+      document.body.removeChild(element);
+      window.location.reload();
+    });
   }
 
   return (

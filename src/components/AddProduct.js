@@ -53,22 +53,20 @@ export default function AddProduct(props) {
 
   const handleSubmit2 = (e) => {
     e.preventDefault();
-    console.log(images);
-    let tempArray = [];
-    IPFS.create().then((ipfs) => {
-      images.files.forEach((e) => {
-        console.log(e);
-        ipfs.add(e).then(({ cid }) => {
-          tempArray.push(cid.toString());
-          setDisabledButton(false);
-          console.log(cid.toString());
-        });
-      });
-      setIpfsCIDs(tempArray);
-    });
-  };
 
-  console.log(ipfsCIDs);
+    IPFS.create().then((ipfs) => {
+      Promise.all(
+        images.files.map(async (file) => {
+          const { cid } = await ipfs.add(file);
+          return cid.toString();
+        })
+      ).then((cidHashes) => {
+        setDisabledButton(false);
+        setIpfsCIDs(cidHashes);
+      });
+    });
+    console.log(ipfsCIDs);
+  };
 
   const handleSubmit = async () => {
     if (!priceOfNew) return;
@@ -96,7 +94,6 @@ export default function AddProduct(props) {
     }
     setOpen(false);
     props.func();
-    
   };
 
   return (
@@ -113,7 +110,7 @@ export default function AddProduct(props) {
       >
         <DialogTitle>{"Add new product"}</DialogTitle>
         <DialogContent>
-        <DialogContentText id="alert-dialog-slide-description">
+          <DialogContentText id="alert-dialog-slide-description">
             Please provide a title for the product:
             <FormControl sx={{ m: 1, width: "18ch" }} variant="outlined">
               <OutlinedInput
@@ -121,7 +118,6 @@ export default function AddProduct(props) {
                 style={{ height: "1cm" }}
                 id="outlined-adornment-title"
                 onChange={(e) => setTitleOfNew(e.target.value)}
-                
                 inputProps={{
                   "aria-label": "Title",
                 }}
