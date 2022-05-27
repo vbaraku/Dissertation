@@ -21,9 +21,6 @@ export default function ViewDetails(props) {
   const [keysHashed, setKeysHashed] = React.useState({
     files: [],
   });
-  // const [keysSample, setKeysSample] = React.useState({
-  //   files: [],
-  // });
   const [keysFinal, setKeysFinal] = React.useState({
     files: [],
   });
@@ -31,10 +28,6 @@ export default function ViewDetails(props) {
     console.log(e.target.files);
     setKeysHashed({ files: [...keysHashed.files, ...e.target.files] });
   };
-  // const retrieveKeys2 = (e) => {
-  //   console.log(e.target.files);
-  //   setKeysSample({ files: [...keysSample.files, ...e.target.files] });
-  // };
   const retrieveKeys3 = (e) => {
     console.log(e.target.files);
     setKeysFinal({ files: [...keysFinal.files, ...e.target.files] });
@@ -50,9 +43,6 @@ export default function ViewDetails(props) {
   const handleClose = () => {
     setOpen(false);
   };
-  //   async function requestAccount() {
-  //     await window.ethereum.request({ method: "eth_requestAccounts" });
-  //   }
 
   async function requestSample() {
     const ethAddress = await signer.getAddress();

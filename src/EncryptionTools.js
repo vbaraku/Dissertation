@@ -38,7 +38,6 @@ function EncryptionTools() {
   };
 
   async function encryptAES() {
-    let fileNames = new Array();
     let encryptedFilesArray = await Promise.all(
       images.files.map(async (element) => {
         const key = new Uint8Array(16);
@@ -87,7 +86,6 @@ function EncryptionTools() {
   }
 
   async function decryptAES() {
-    let fileNames = new Array();
     const key = await keys.files[0].text();
     let keyArray = key.split(",");
     let decryptedFilesArray = await Promise.all(
