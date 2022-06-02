@@ -82,44 +82,57 @@ function Home() {
         <Grid spacing={2} style={{ height: "100vh", display: "flex" }}>
           <Grid item xs={2}>
             <Card
-              sx={{ height: "100%", backgroundColor: "#454a75", width: 200 }}
+              sx={{
+                height: "100%",
+                background: "linear-gradient(to bottom, #454a75, #4E5383);",
+                padding: 2,
+              }}
+              elevation={3}
             >
-              <Link to="/">
-                <Button
-                  variant="contained"
-                  sx={{
-                    backgroundColor: "#b8fbf6",
-                    color: "black",
-                    width: "200px",
-                  }}
-                >
-                  Home
-                </Button>
-              </Link>
-              <Link to="/tools">
-                <Button
-                  variant="contained"
-                  sx={{
-                    backgroundColor: "#b8fbf6",
-                    color: "black",
-                    width: "200px",
-                  }}
-                >
-                  Encryption Tools
-                </Button>
-              </Link>
-              <Link to="/history">
-                <Button
-                  variant="contained"
-                  sx={{
-                    backgroundColor: "#b8fbf6",
-                    color: "black",
-                    width: "200px",
-                  }}
-                >
-                  History
-                </Button>
-              </Link>
+              <Grid direction="column" container gap={1}>
+                <Grid item>
+                  <Link to="/">
+                    <Button
+                      variant="contained"
+                      sx={{
+                        backgroundColor: "white",
+                        color: "black",
+                        width: "200px",
+                      }}
+                    >
+                      Home
+                    </Button>
+                  </Link>
+                </Grid>
+                <Grid item>
+                  <Link to="/tools">
+                    <Button
+                      variant="contained"
+                      sx={{
+                        backgroundColor: "white",
+                        color: "black",
+                        width: "200px",
+                      }}
+                    >
+                      Encryption Tools
+                    </Button>
+                  </Link>
+                </Grid>
+                <Grid item>
+                  <Link to="/history">
+                    <Button
+                      variant="contained"
+                      sx={{
+                        backgroundColor: "white",
+                        color: "black",
+                        width: "200px",
+                      }}
+                    >
+                      History
+                    </Button>
+                  </Link>
+                </Grid>
+              </Grid>
               <AddProduct func={fetchData}></AddProduct>
             </Card>
           </Grid>

@@ -14,6 +14,8 @@ import InputAdornment from "@mui/material/InputAdornment";
 import FormControl from "@mui/material/FormControl";
 import * as IPFS from "ipfs-core";
 import Input from "@mui/material/Input";
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import { IconButton } from "@mui/material";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -97,10 +99,10 @@ export default function AddProduct(props) {
   };
 
   return (
-    <div>
-      <Button variant="contained" sx={{backgroundColor : "#b8fbf6", color: "Green", width: "200px", marginTop: "350%"}} onClick={handleClickOpen}>
-        New product
-      </Button>
+    <>
+      <IconButton variant="contained" sx={{position: 'absolute', bottom: '20px', right: '20px'}} title="New Product" onClick={handleClickOpen}>
+        <AddCircleIcon fontSize="large" />
+      </IconButton>
       <Dialog
         open={open}
         TransitionComponent={Transition}
@@ -158,6 +160,6 @@ export default function AddProduct(props) {
           </Button>
         </DialogActions>
       </Dialog>
-    </div>
+    </>
   );
 }

@@ -2,15 +2,8 @@ import { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import Purchase from "./artifacts/contracts/Purchase.sol/Purchase.json";
 import ContractFactory from "./artifacts/contracts/ContractFactory.sol/ContractFactory.json";
-import { formatEther } from "ethers/lib/utils";
-import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
-import CardActions from "@mui/material/CardActions";
-import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
-import AddProduct from "./components/AddProduct";
-import ViewDetails from "./components/ViewDetails";
 import Grid from "@mui/material/Grid";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -62,7 +55,7 @@ function History() {
 
           Promise.all(promises).then((results) => {
             let notFinished = results.filter((el) => {
-              if (el.isFinished) {
+              if (!el.isFinished) {
                 return el;
               }
             });
@@ -83,50 +76,63 @@ function History() {
     <div className="App">
       <div className="App-header">
         <Grid spacing={2} style={{ height: "100vh", display: "flex" }}>
-          <Grid item xs={2}>
+        <Grid item xs={2}>
             <Card
-              sx={{ height: "100%", backgroundColor: "#454a75", width: 200 }}
+              sx={{
+                height: "100%",
+                background: "linear-gradient(to bottom, #454a75, #4E5383);",
+                padding: 2,
+              }}
+              elevation={3}
             >
-              <Link to="/">
-                <Button
-                  variant="contained"
-                  sx={{
-                    backgroundColor: "#b8fbf6",
-                    color: "black",
-                    width: "200px",
-                  }}
-                >
-                  Home
-                </Button>
-              </Link>
-              <Link to="/tools">
-                <Button
-                  variant="contained"
-                  sx={{
-                    backgroundColor: "#b8fbf6",
-                    color: "black",
-                    width: "200px",
-                  }}
-                >
-                  Encryption Tools
-                </Button>
-              </Link>
-              <Link to="/history">
-                <Button
-                  variant="contained"
-                  sx={{
-                    backgroundColor: "#b8fbf6",
-                    color: "black",
-                    width: "200px",
-                  }}
-                >
-                  History
-                </Button>
-              </Link>
+              <Grid direction="column" container gap={1}>
+                <Grid item>
+                  <Link to="/">
+                    <Button
+                      variant="contained"
+                      sx={{
+                        backgroundColor: "white",
+                        color: "black",
+                        width: "200px",
+                      }}
+                    >
+                      Home
+                    </Button>
+                  </Link>
+                </Grid>
+                <Grid item>
+                  <Link to="/tools">
+                    <Button
+                      variant="contained"
+                      sx={{
+                        backgroundColor: "white",
+                        color: "black",
+                        width: "200px",
+                      }}
+                    >
+                      Encryption Tools
+                    </Button>
+                  </Link>
+                </Grid>
+                <Grid item>
+                  <Link to="/history">
+                    <Button
+                      variant="contained"
+                      sx={{
+                        backgroundColor: "white",
+                        color: "black",
+                        width: "200px",
+                      }}
+                    >
+                      History
+                    </Button>
+                  </Link>
+                </Grid>
+              </Grid>
             </Card>
           </Grid>
           <Grid item xs={10}>
-            <div style={{ marginLeft: "auto" }}>
+            <div style={{ padding: 15 }}>
               <TableContainer component={Paper}>
                 <Table
                   sx={{ minWidth: 650, marginLeft: "auto" }}

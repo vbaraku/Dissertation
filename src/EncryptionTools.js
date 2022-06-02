@@ -10,9 +10,7 @@ import Grid from "@mui/material/Grid";
 import { ethers } from "ethers";
 import Input from "@mui/material/Input";
 import * as IPFS from "ipfs-core";
-
 import DialogContentText from "@mui/material/DialogContentText";
-
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import EthCrypto from "eth-crypto";
 
@@ -233,67 +231,83 @@ function EncryptionTools() {
         <Grid spacing={2} style={{ height: "100vh", display: "flex" }}>
           <Grid item xs={2}>
             <Card
-              sx={{ height: "100%", backgroundColor: "#454a75", width: 200 }}
+              sx={{
+                height: "100%",
+                background: "linear-gradient(to bottom, #454a75, #4E5383);",
+                padding: 2,
+              }}
+              elevation={3}
             >
-              <Link to="/">
-                <Button
-                  variant="contained"
-                  sx={{
-                    backgroundColor: "#b8fbf6",
-                    color: "black",
-                    width: "200px",
-                  }}
-                >
-                  Home
-                </Button>
-              </Link>
-              <Link to="/tools">
-                <Button
-                  variant="contained"
-                  sx={{
-                    backgroundColor: "#b8fbf6",
-                    color: "black",
-                    width: "200px",
-                  }}
-                >
-                  Encryption Tools
-                </Button>
-              </Link>
-              <Link to="/history">
-                <Button
-                  variant="contained"
-                  sx={{
-                    backgroundColor: "#b8fbf6",
-                    color: "black",
-                    width: "200px",
-                  }}
-                >
-                  History
-                </Button>
-              </Link>
+              <Grid direction="column" container gap={1}>
+                <Grid item>
+                  <Link to="/">
+                    <Button
+                      variant="contained"
+                      sx={{
+                        backgroundColor: "white",
+                        color: "black",
+                        width: "200px",
+                      }}
+                    >
+                      Home
+                    </Button>
+                  </Link>
+                </Grid>
+                <Grid item>
+                  <Link to="/tools">
+                    <Button
+                      variant="contained"
+                      sx={{
+                        backgroundColor: "white",
+                        color: "black",
+                        width: "200px",
+                      }}
+                    >
+                      Encryption Tools
+                    </Button>
+                  </Link>
+                </Grid>
+                <Grid item>
+                  <Link to="/history">
+                    <Button
+                      variant="contained"
+                      sx={{
+                        backgroundColor: "white",
+                        color: "black",
+                        width: "200px",
+                      }}
+                    >
+                      History
+                    </Button>
+                  </Link>
+                </Grid>
+              </Grid>
             </Card>
           </Grid>
           <Grid
             item
             xs={10}
+            justifyContent="center"
+            alignItems="center"
             sx={{ display: "flex", flexWrap: "wrap", height: 250 }}
           >
-            <Card sx={{ minWidth: 275, margin: 2, height: 250 }}>
+            <Card sx={{ minWidth: 350, margin: 2, height: 300 }}>
               <CardContent>
                 <Typography
-                  sx={{ fontSize: 14 }}
-                  color="text.secondary"
+                  color="black"
                   gutterBottom
+                  variant="h5"
                 >
                   AES Encryption
                 </Typography>
 
-                <Typography sx={{ mb: 1.5 }} color="text.secondary">
+                <Typography sx={{ mb: 1.5 }} color="text.secondary" >
                   Upload images to encrypt:
                 </Typography>
-                <DialogContentText>
+                <DialogContentText sx={{ mb: 1.5 }}>
                   Please upload your data:
-                  <br></br>
+                  </DialogContentText>
+                  <DialogContentText sx={{marginLeft: 8 }}>
                   <input
                     type="file"
                     multiple
@@ -302,28 +316,29 @@ function EncryptionTools() {
                   />
                 </DialogContentText>
               </CardContent>
-              <CardActions>
+              <CardActions sx={{marginTop: 10.5, marginLeft: 13}}>
                 <Button size="small" onClick={encryptAES}>
                   Encrypt images
                 </Button>
               </CardActions>
             </Card>
 
-            <Card sx={{ minWidth: 275, margin: 2, height: 250 }}>
+            <Card sx={{ minWidth: 350, margin: 2, height: 300 }}>
               <CardContent>
                 <Typography
-                  sx={{ fontSize: 14 }}
-                  color="text.secondary"
-                  gutterBottom
+                 color="black"
+                 gutterBottom
+                 variant="h5"
                 >
                   AES Decryption
                 </Typography>
                 <Typography sx={{ mb: 1.5 }} color="text.secondary">
                   Upload images to decrypt:
                 </Typography>
-                <DialogContentText>
+                <DialogContentText  sx={{ mb: 1.5 }}>
                   Please upload your data:
-                  <br></br>
+                  </DialogContentText>
+                  <DialogContentText sx={{ marginLeft: 8,  mb: 2 }}>
                   <input
                     type="file"
                     multiple
@@ -334,7 +349,7 @@ function EncryptionTools() {
                 <Typography sx={{ mb: 1.5 }} color="text.secondary">
                   Upload keys to decrypt:
                 </Typography>
-                <DialogContentText>
+                <DialogContentText sx={{marginLeft: 8}}>
                   <input
                     type="file"
                     multiple
@@ -343,26 +358,49 @@ function EncryptionTools() {
                   />
                 </DialogContentText>
               </CardContent>
-              <CardActions>
+              <CardActions sx={{marginTop: 1, marginLeft: 13}}>
                 <Button size="small" onClick={decryptAES}>
                   Decrypt images
                 </Button>
               </CardActions>
             </Card>
 
-            <Card sx={{ minWidth: 275, margin: 2, height: 250 }}>
+            <Card sx={{ minWidth: 350, margin: 2, height: 300 }}>
               <CardContent>
                 <Typography
-                  sx={{ fontSize: 14 }}
-                  color="text.secondary"
+                  color="black"
                   gutterBottom
+                  variant="h5"
+                >
+                  Get Files from IPFS
+                </Typography>
+                <Typography sx={{ mb: 1.5 }} color="text.secondary">
+                  Provide the file CIDs:
+                </Typography>
+                <DialogContentText>
+                  <Input id="cids"></Input>
+                </DialogContentText>
+              </CardContent>
+              <CardActions sx={{marginTop: 14, marginLeft: 15}}>
+                <Button size="small" onClick={getFilesFromIpfs}>
+                  Fetch files
+                </Button>
+              </CardActions>
+            </Card>
+
+            <Card sx={{ minWidth: 350, margin: 2, height: 300 }}>
+              <CardContent>
+                <Typography
+                 color="black"
+                 gutterBottom
+                 variant="h5"
                 >
                   ECIES Encrypt
                 </Typography>
                 <Typography sx={{ mb: 1.5 }} color="text.secondary">
                   Upload keys to encrypt:
                 </Typography>
-                <DialogContentText>
+                <DialogContentText sx={{ marginLeft: 8,  mb: 2 }}>
                   <input
                     type="file"
                     multiple
@@ -378,25 +416,25 @@ function EncryptionTools() {
                 </DialogContentText>
               </CardContent>
               <CardActions>
-                <Button size="small" onClick={encryptEcies}>
+                <Button sx={{ marginLeft: 14,  marginTop: 4}} size="small" onClick={encryptEcies}>
                   Encrypt keys
                 </Button>
               </CardActions>
             </Card>
 
-            <Card sx={{ minWidth: 275, margin: 2, height: 250 }}>
+            <Card sx={{ minWidth: 350, margin: 2, height: 300 }}>
               <CardContent>
                 <Typography
-                  sx={{ fontSize: 14 }}
-                  color="text.secondary"
-                  gutterBottom
+                   color="black"
+                   gutterBottom
+                   variant="h5"
                 >
                   ECIES Decrypt
                 </Typography>
                 <Typography sx={{ mb: 1.5 }} color="text.secondary">
                   Upload keys to decrypt:
                 </Typography>
-                <DialogContentText>
+                <DialogContentText sx={{ marginLeft: 8,  mb: 2 }}>
                   <input
                     type="file"
                     multiple
@@ -411,26 +449,26 @@ function EncryptionTools() {
                   <Input id="privateKey"></Input>
                 </DialogContentText>
               </CardContent>
-              <CardActions>
+              <CardActions sx={{ marginLeft: 14,  marginTop: 4}}>
                 <Button size="small" onClick={decryptEcies}>
                   Decrypt keys
                 </Button>
               </CardActions>
             </Card>
 
-            <Card sx={{ minWidth: 275, margin: 2, height: 250 }}>
+            <Card sx={{ minWidth: 350, margin: 2, height: 300 }}>
               <CardContent>
                 <Typography
-                  sx={{ fontSize: 14 }}
-                  color="text.secondary"
+                  color="black"
                   gutterBottom
+                  variant="h5"
                 >
                   Keccak256 hashing
                 </Typography>
                 <Typography sx={{ mb: 1.5 }} color="text.secondary">
                   Upload keys to hash:
                 </Typography>
-                <DialogContentText>
+                <DialogContentText sx={{ marginLeft: 8,  mb: 2 }}>
                   <input
                     type="file"
                     multiple
@@ -439,35 +477,13 @@ function EncryptionTools() {
                   />
                 </DialogContentText>
               </CardContent>
-              <CardActions>
+              <CardActions sx={{ marginLeft: 16,  marginTop: 12.5}}>
                 <Button size="small" onClick={hash}>
                   Hash keys
                 </Button>
               </CardActions>
             </Card>
 
-            <Card sx={{ minWidth: 275, margin: 2, height: 250 }}>
-              <CardContent>
-                <Typography
-                  sx={{ fontSize: 14 }}
-                  color="text.secondary"
-                  gutterBottom
-                >
-                  Get Files from IPFS
-                </Typography>
-                <Typography sx={{ mb: 1.5 }} color="text.secondary">
-                  Provide the file CIDs:
-                </Typography>
-                <DialogContentText>
-                  <Input id="cids"></Input>
-                </DialogContentText>
-              </CardContent>
-              <CardActions>
-                <Button size="small" onClick={getFilesFromIpfs}>
-                  Fetch files
-                </Button>
-              </CardActions>
-            </Card>
           </Grid>
         </Grid>
       </div>
