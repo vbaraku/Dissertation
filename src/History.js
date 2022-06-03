@@ -55,7 +55,7 @@ function History() {
 
           Promise.all(promises).then((results) => {
             let notFinished = results.filter((el) => {
-              if (!el.isFinished) {
+              if (el.isFinished) {
                 return el;
               }
             });
