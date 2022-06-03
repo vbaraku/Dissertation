@@ -1,0 +1,23 @@
+
+0. Open two terminals
+1. The first command should be:
+
+npx hardhat node 
+
+^This creates a local blockchain.
+
+2. Then the command (on the other terminal): 
+npx hardhat run --network localhost scripts/deploy.js
+
+^This deploys the factory.
+
+3. Then start the react server
+
+npm start
+
+This will run the program, to use it, you need to get the MetaMask
+wallet extension for your browser and import 1 or 2 accounts to it.
+These accounts are imported through the private key (check the hardhat node it will provide you 20 accounts).
+
+ 
+
