@@ -5,6 +5,10 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
+import Card from "@mui/material/Card";
+import CardActions from "@mui/material/CardActions";
+import CardContent from "@mui/material/CardContent";
+import Typography from "@mui/material/Typography";
 import DialogTitle from "@mui/material/DialogTitle";
 import FormControl from "@mui/material/FormControl";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -119,7 +123,6 @@ export default function ViewDetails(props) {
       document.body.appendChild(element);
       element.click();
       document.body.removeChild(element);
-      
     } catch (error) {
       alert("Something went wrong");
       console.log(error);
@@ -176,7 +179,6 @@ export default function ViewDetails(props) {
       element.click();
       document.body.removeChild(element);
       window.location.reload();
-      
     } catch (error) {
       alert("Only the buyer can get the keys");
       console.log(error);
@@ -204,88 +206,98 @@ export default function ViewDetails(props) {
           <DialogContentText>
             Interested Buyer: {props.interestedBuyers}
           </DialogContentText>
-          <Button
-            sx={{ margin: "5px" }}
-            variant="outlined"
-            onClick={requestSample}
-          >
-            Request Sample
-          </Button>
-          <br></br>
-          <Button
-            sx={{ margin: "5px" }}
-            variant="outlined"
-            onClick={provideHashedKeys}
-          >
-            Provide hashed keys
-          </Button>
-          <Input
-            id="hashedKeys"
-            type="file"
-            multiple
-            name="data"
-            onChange={retrieveKeys1}
-          ></Input>
-          <br></br>
-          <Button
-            sx={{ margin: "5px" }}
-            variant="outlined"
-            onClick={provideUnHashedKeys}
-          >
-            Provide non-hashed key
-          </Button>
+          <div style={{display: "flex"}}>
+            <Card variant="outlined" sx={{ width: 550, margin: 2, height: 250 }}>
+              <CardContent>
+                <Typography color="black" gutterBottom variant="h5">
+                  For buyers:
+                </Typography>
+                <Button
+                  sx={{ margin: "5px" }}
+                  variant="outlined"
+                  onClick={requestSample}
+                >
+                  Request Sample
+                </Button>
+                <Button
+                  sx={{ margin: "5px", marginLeft: 3.5 }}
+                  variant="outlined"
+                  onClick={viewSampleKey}
+                >
+                  View sample key
+                </Button>
+                <Button
+                  sx={{ margin: "5px" }}
+                  variant="contained"
+                  color="success"
+                  onClick={purchaseRequest}
+                >
+                  Purchase request
+                </Button>
+                <Button
+                  sx={{ margin: "5px" }}
+                  variant="contained"
+                  color="error"
+                  onClick={cancelPurchase}
+                >
+                  Cancel purchase
+                </Button>
+                <Button
+                  sx={{ margin: "5px" }}
+                  variant="contained"
+                  color="success"
+                  onClick={getKeys}
+                >
+                  Get product keys
+                </Button>
+              </CardContent>
+            </Card>
 
-          <Input id="unHashedKeys"></Input>
-          <br></br>
-          <Button
-            sx={{ margin: "5px" }}
-            variant="outlined"
-            onClick={viewSampleKey}
-          >
-            View sample key
-          </Button>
-          <br></br>
-          <Button
-            sx={{ margin: "5px" }}
-            variant="contained"
-            color="success"
-            onClick={purchaseRequest}
-          >
-            Purchase request
-          </Button>
-          <Button
-            sx={{ margin: "5px" }}
-            variant="contained"
-            color="error"
-            onClick={cancelPurchase}
-          >
-            Cancel purchase
-          </Button>
-          <br></br>
-          <Button
-            sx={{ margin: "5px" }}
-            variant="contained"
-            color="success"
-            onClick={withdrawFunds}
-          >
-            Withdraw funds
-          </Button>
-          <Input
-            type="file"
-            multiple
-            name="data"
-            onChange={retrieveKeys3}
-            id="withdraw"
-          ></Input>
-          <br></br>
-          <Button
-            sx={{ margin: "5px" }}
-            variant="contained"
-            color="success"
-            onClick={getKeys}
-          >
-            Get product keys
-          </Button>
+            <Card variant="outlined" sx={{ width: 550, margin: 2, height: 250 }}>
+              <CardContent>
+                <Typography color="black" gutterBottom variant="h5">
+                  For sellers:
+                </Typography>
+                <Button
+                  sx={{ margin: "5px" }}
+                  variant="outlined"
+                  onClick={provideHashedKeys}
+                >
+                  Provide hashed keys
+                </Button>
+                <Input
+                  id="hashedKeys"
+                  type="file"
+                  multiple
+                  name="data"
+                  onChange={retrieveKeys1}
+                ></Input>
+                <Button
+                  sx={{ margin: "5px" }}
+                  variant="outlined"
+                  onClick={provideUnHashedKeys}
+                >
+                  Provide non-hashed key
+                </Button>
+                <Input id="unHashedKeys"></Input>
+                <Button
+                  sx={{ margin: "5px" }}
+                  variant="contained"
+                  color="success"
+                  onClick={withdrawFunds}
+                >
+                  Withdraw funds
+                </Button>
+                <Input
+                  type="file"
+                  multiple
+                  name="data"
+                  onChange={retrieveKeys3}
+                  id="withdraw"
+                ></Input>
+              </CardContent>
+            </Card>
+          </div>
           <Box
             noValidate
             component="form"

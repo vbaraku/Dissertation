@@ -76,11 +76,11 @@ function History() {
     <div className="App">
       <div className="App-header">
         <Grid spacing={2} style={{ height: "100vh", display: "flex" }}>
-        <Grid item xs={2}>
+          <Grid item xs={2}>
             <Card
               sx={{
                 height: "100%",
-                background: "linear-gradient(to bottom, #454a75, #4E5383);",
+                background: "linear-gradient(to bottom, #118ab2, #118ab2);",
                 padding: 2,
               }}
               elevation={3}
@@ -131,11 +131,11 @@ function History() {
               </Grid>
             </Card>
           </Grid>
-          <Grid item xs={10}>
+          <Grid item xs={10} sx={{marginLeft: "auto", marginRight: "auto"}}>
             <div style={{ padding: 15 }}>
               <TableContainer component={Paper}>
                 <Table
-                  sx={{ minWidth: 650, marginLeft: "auto" }}
+                  sx={{ minWidth: 1050, marginLeft: "auto" }}
                   size="small"
                   aria-label="simple table"
                 >

@@ -13,9 +13,11 @@ import * as IPFS from "ipfs-core";
 import DialogContentText from "@mui/material/DialogContentText";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import EthCrypto from "eth-crypto";
+import CircularProgress from '@mui/material/CircularProgress';
 
 function EncryptionTools() {
   var aesjs = require("aes-js");
+  const [hidden, setHidden] = React.useState("hidden");
 
   const [images, setImages] = React.useState({
     files: [],
@@ -195,6 +197,7 @@ function EncryptionTools() {
   }
 
   async function getFilesFromIpfs() {
+    setHidden("visible");
     let cids = document.getElementById("cids").value;
     let cidArray = cids.split(",");
     const ipfs = await IPFS.create();
@@ -209,6 +212,7 @@ function EncryptionTools() {
         return data;
       })
     );
+    setHidden("hidden");
     alert("Data fetched from IPFS and will be downloaded");
     ipfsData.forEach((data) => {
       var element = document.createElement("a");
@@ -233,7 +237,7 @@ function EncryptionTools() {
             <Card
               sx={{
                 height: "100%",
-                background: "linear-gradient(to bottom, #454a75, #4E5383);",
+                background: "linear-gradient(to bottom, #118ab2, #118ab2);",
                 padding: 2,
               }}
               elevation={3}
@@ -380,8 +384,9 @@ function EncryptionTools() {
                 <DialogContentText>
                   <Input id="cids"></Input>
                 </DialogContentText>
+                <CircularProgress sx={{ visibility: hidden, marginTop: 5}}/>
               </CardContent>
-              <CardActions sx={{marginTop: 14, marginLeft: 15}}>
+              <CardActions sx={{marginTop: 3, marginLeft: 15}}>
                 <Button size="small" onClick={getFilesFromIpfs}>
                   Fetch files
                 </Button>

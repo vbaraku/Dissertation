@@ -14,8 +14,9 @@ import InputAdornment from "@mui/material/InputAdornment";
 import FormControl from "@mui/material/FormControl";
 import * as IPFS from "ipfs-core";
 import Input from "@mui/material/Input";
-import AddCircleIcon from '@mui/icons-material/AddCircle';
+import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { IconButton } from "@mui/material";
+import CircularProgress from '@mui/material/CircularProgress';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -24,6 +25,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 export default function AddProduct(props) {
   const factoryAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
   const [open, setOpen] = React.useState(false);
+  const [hidden, setHidden] = React.useState("hidden");
 
   const [priceOfNew, setPriceOfNew] = React.useState();
   const [titleOfNew, setTitleOfNew] = React.useState();
@@ -55,6 +57,7 @@ export default function AddProduct(props) {
 
   const handleSubmit2 = (e) => {
     e.preventDefault();
+    setHidden("visible");
 
     IPFS.create().then((ipfs) => {
       Promise.all(
@@ -65,6 +68,7 @@ export default function AddProduct(props) {
       ).then((cidHashes) => {
         setDisabledButton(false);
         setIpfsCIDs(cidHashes);
+        setHidden("hidden");
       });
     });
     console.log(ipfsCIDs);
@@ -100,7 +104,12 @@ export default function AddProduct(props) {
 
   return (
     <>
-      <IconButton variant="contained" sx={{position: 'absolute', bottom: '20px', right: '20px'}} title="New Product" onClick={handleClickOpen}>
+      <IconButton
+        variant="contained"
+        sx={{ position: "absolute", bottom: "20px", right: "20px" }}
+        title="New Product"
+        onClick={handleClickOpen}
+      >
         <AddCircleIcon fontSize="large" />
       </IconButton>
       <Dialog
@@ -112,9 +121,15 @@ export default function AddProduct(props) {
       >
         <DialogTitle>{"Add new product"}</DialogTitle>
         <DialogContent>
-          <DialogContentText id="alert-dialog-slide-description">
+          <DialogContentText
+            id="alert-dialog-slide-description"
+            sx={{ marginBottom: 1 }}
+          >
             Please provide a title for the product:
-            <FormControl sx={{ m: 1, width: "18ch" }} variant="outlined">
+            <FormControl
+              sx={{ m: 1, marginTop: 0, width: "23.5ch" }}
+              variant="outlined"
+            >
               <OutlinedInput
                 required
                 style={{ height: "1cm" }}
@@ -128,7 +143,10 @@ export default function AddProduct(props) {
           </DialogContentText>
           <DialogContentText id="alert-dialog-slide-description">
             Please provide the wanted amount in Ether:
-            <FormControl sx={{ m: 1, width: "18ch" }} variant="outlined">
+            <FormControl
+              sx={{ m: 1, marginTop: 0, width: "18ch" }}
+              variant="outlined"
+            >
               <OutlinedInput
                 required
                 style={{ height: "1cm" }}
@@ -143,14 +161,16 @@ export default function AddProduct(props) {
               />
             </FormControl>
           </DialogContentText>
+          <DialogContentText sx={{marginBottom: 1}}>Please upload your data:</DialogContentText>
           <DialogContentText>
-            Please upload your data:
             <form className="form" onSubmit={handleSubmit2}>
               <input type="file" multiple name="data" onChange={retrieveFile} />
-              <button type="submit" className="btn">
+              <Button type="submit" className="btn">
                 Upload file
-              </button>
+              </Button>
+              <CircularProgress sx={{ visibility: hidden, marginLeft: 2, marginTop: -2}}/> 
             </form>
+            
           </DialogContentText>
         </DialogContent>
         <DialogActions>

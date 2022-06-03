@@ -84,7 +84,7 @@ function Home() {
             <Card
               sx={{
                 height: "100%",
-                background: "linear-gradient(to bottom, #454a75, #4E5383);",
+                background: "linear-gradient(to bottom, #118ab2 , #118ab2 );",
                 padding: 2,
               }}
               elevation={3}
@@ -139,7 +139,10 @@ function Home() {
           <Grid
             item
             xs={10}
+            justifyContent="center"
+            alignItems="center"
             sx={{ display: "flex", flexWrap: "wrap", height: 250 }}
+            
           >
             {contractsData.map((el) => (
               <Card sx={{ minWidth: 275, maxWidth: 350, margin: 2 }}>
@@ -165,7 +168,7 @@ function Home() {
                     {el.price} eth
                   </Typography>
                 </CardContent>
-                <CardActions>
+                <CardActions sx={{marginLeft: 12.5}}>
                   <ViewDetails
                     title={el.title}
                     address={el.address}
